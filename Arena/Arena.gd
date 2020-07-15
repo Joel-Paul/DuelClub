@@ -5,8 +5,11 @@ const CARD_WIDTH = 362 / 2
 const CARD_HEIGHT = 512 / 2
 const CARD_SPACING = 200
 
-const HAND_BUFFER = -100
+const HAND_BUFFER = 100
 const HAND_CURVE = 3
+
+const MAX_ANGLE = PI / 4.0
+const STEEPNESS = 0.002
 
 
 # Load spell cards.
@@ -59,13 +62,15 @@ func drawCard():
 # Update the positions and sizes of the cards in the hand.
 func updateHand():
 	hand = $Hand.get_children()
+	var width = get_viewport_rect().size.x
+	var height = get_viewport_rect().size.y
 	
 	# Figure out where each card should be placed
 	# based on the number of cards and their width.
 	var numCards = hand.size()
 	var length = CARD_SPACING * (numCards - 1)
-	var xBuffer = (get_viewport_rect().size.x - length) / 2
-	var yBuffer = get_viewport_rect().size.y - CARD_HEIGHT / 3
+	var xBuffer = (width - length) / 2
+	var yBuffer = height - HAND_BUFFER
 	
 	for i in range(hand.size()):
 		var card = hand[i]
@@ -77,12 +82,14 @@ func updateHand():
 		# (x - w/2)^2 / (w * C) + (h + B)
 		# Where x is the x-cord, w is the width, C is a curvature constant,
 		# h is the height, and B is the buffer constant.
-		var width = get_viewport_rect().size.x
-		var height = get_viewport_rect().size.y
-		var yDist = pow(xDist - (width / 2), 2) / (width * HAND_CURVE) + (height + HAND_BUFFER)
+		var yDist = pow(xDist - (width / 2), 2) / (width * HAND_CURVE) + yBuffer
 		
 		card.position = Vector2(xDist, yDist)
 		print("\t %s" % card.position)
+		
+		# Tilt cards based on position
+		var angle = MAX_ANGLE / (1.0 + exp(-STEEPNESS * (xDist - width / 2.0))) - MAX_ANGLE / 2.0
+		card.rotation = angle
 		
 	print("Hand updated")
 		
