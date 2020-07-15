@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Arena/Arena.gd" type="Script" id=1]
+[ext_resource path="res://Arena/EmptyDeck.png" type="Texture" id=2]
+
+[node name="Arena" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="DrawPileButton" type="TextureButton" parent="."]
+margin_left = 23.5508
+margin_top = 796.781
+margin_right = 385.551
+margin_bottom = 1308.78
+rect_scale = Vector2( 0.5, 0.5 )
+texture_normal = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Hand" type="Node2D" parent="."]
+[connection signal="pressed" from="DrawPileButton" to="." method="_on_DrawPileButton_pressed"]
