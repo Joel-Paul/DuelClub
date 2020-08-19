@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/BlankLabel.png-2377a29bdd6b1b1524f2f85258ddb597.stex"
+path="res://.import/blank_cost.png-7563870f9b39a9d51326540af6e3f97f.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Cards/CardBlank/BlankLabel.png"
-dest_files=[ "res://.import/BlankLabel.png-2377a29bdd6b1b1524f2f85258ddb597.stex" ]
+source_file="res://Cards/CardBlank/blank_cost.png"
+dest_files=[ "res://.import/blank_cost.png-7563870f9b39a9d51326540af6e3f97f.stex" ]
 
 [params]
 

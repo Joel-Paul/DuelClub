@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/BlankBorder.png-08d8c7e4ff141577a626e4ec77b841b4.stex"
+path="res://.import/filled_deck.png-937db73297610359ea4331100104ebf7.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Cards/CardBlank/BlankBorder.png"
-dest_files=[ "res://.import/BlankBorder.png-08d8c7e4ff141577a626e4ec77b841b4.stex" ]
+source_file="res://Deck/filled_deck.png"
+dest_files=[ "res://.import/filled_deck.png-937db73297610359ea4331100104ebf7.stex" ]
 
 [params]
 

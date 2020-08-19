@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/BlankDescription.png-bfef02b84f8c60eb0320260b1309e600.stex"
+path="res://.import/empty_deck.png-387b8521a184d1d7158d6cd127e79273.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Cards/CardBlank/BlankDescription.png"
-dest_files=[ "res://.import/BlankDescription.png-bfef02b84f8c60eb0320260b1309e600.stex" ]
+source_file="res://Deck/empty_deck.png"
+dest_files=[ "res://.import/empty_deck.png-387b8521a184d1d7158d6cd127e79273.stex" ]
 
 [params]
 

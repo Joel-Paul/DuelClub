@@ -1,21 +1,14 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://Arena/Arena.gd" type="Script" id=1]
-[ext_resource path="res://Arena/EmptyDeck.png" type="Texture" id=2]
+[ext_resource path="res://Deck/Deck.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Arena/Arena.gd" type="Script" id=2]
+[ext_resource path="res://Hand/Hand.tscn" type="PackedScene" id=3]
 
 [node name="Arena" type="Node2D"]
-script = ExtResource( 1 )
+script = ExtResource( 2 )
 
-[node name="DrawPileButton" type="TextureButton" parent="."]
-margin_left = 23.5508
-margin_top = 796.781
-margin_right = 385.551
-margin_bottom = 1308.78
-rect_scale = Vector2( 0.5, 0.5 )
-texture_normal = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="DrawDeck" parent="." instance=ExtResource( 1 )]
+position = Vector2( 161.399, 858.045 )
 
-[node name="Hand" type="Node2D" parent="."]
-[connection signal="pressed" from="DrawPileButton" to="." method="_on_DrawPileButton_pressed"]
+[node name="Hand" parent="." instance=ExtResource( 3 )]
+[connection signal="card_drawn" from="DrawDeck" to="." method="_on_DrawDeck_card_drawn"]
