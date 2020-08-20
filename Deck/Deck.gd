@@ -2,6 +2,7 @@ extends Node2D
 
 
 signal card_drawn(card)
+
 var deck := []
 
 

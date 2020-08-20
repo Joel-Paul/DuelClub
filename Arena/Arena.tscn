@@ -8,7 +8,7 @@
 script = ExtResource( 2 )
 
 [node name="DrawDeck" parent="." instance=ExtResource( 1 )]
-position = Vector2( 161.399, 858.045 )
+position = Vector2( 109.766, 932.128 )
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 [connection signal="card_drawn" from="DrawDeck" to="." method="_on_DrawDeck_card_drawn"]
