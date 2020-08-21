@@ -13,6 +13,7 @@ onready var tween = $Tween
 
 func _ready():
 	$FocusGlow.visible = false
+	$FocusButton.visible = false
 
 
 func get_size() -> Vector2:
@@ -52,3 +53,7 @@ func make_focused() -> void:
 
 func make_unfocused() -> void:
 	$FocusGlow.visible = false
+
+
+func _on_Timer_timeout():
+	$FocusButton.visible = true
