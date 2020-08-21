@@ -9,7 +9,6 @@ const MAX_ANGLE = PI
 const ANGLE_STEEPNES = 0.0005
 
 const SCALE_START = Vector2(0.5, 0.5)
-const SCALE_END = Vector2(0.75, 0.75)
 
 var dist = MAX_DIST
 
@@ -33,7 +32,7 @@ func update_hand() -> void:
 				target_rot(card), 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
 		# Tween the card's SCALE
 		tween.interpolate_property(card, "scale", card.scale,
-				SCALE_END, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+				card.SCALE_DEFAULT, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
 	tween.start()
 
 
@@ -42,7 +41,7 @@ func target_pos(card: Card) -> Vector2:
 	var size: float = $Cards.get_child_count()
 	var index: float = card.get_index()
 	
-	var x_pos: float = (index - (size - 1.0) / 2.0) * card.width * SCALE_END.x * dist
+	var x_pos: float = (index - (size - 1.0) / 2.0) * card.width * card.SCALE_DEFAULT.x * dist
 	var y_pos: float = x_pos * x_pos / get_viewport_rect().size.x * POS_CURVE
 	
 	return Vector2(x_pos, y_pos)

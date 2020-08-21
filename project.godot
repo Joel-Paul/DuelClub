@@ -58,3 +58,5 @@ texture={
 
 quality/filters/msaa=2
 environment/default_environment="res://default_env.tres"
+environment/size/height=1080
+environment/size/width=1920

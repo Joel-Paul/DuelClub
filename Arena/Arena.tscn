@@ -6,9 +6,13 @@
 
 [node name="Arena" type="Node2D"]
 script = ExtResource( 2 )
+__meta__ = {
+"_edit_horizontal_guides_": [  ]
+}
 
 [node name="DrawDeck" parent="." instance=ExtResource( 1 )]
-position = Vector2( 109.766, 932.128 )
+position = Vector2( 110.275, 920.828 )
+scale = Vector2( 0.5, 0.5 )
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 [connection signal="card_drawn" from="DrawDeck" to="." method="_on_DrawDeck_card_drawn"]

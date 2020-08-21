@@ -10,6 +10,7 @@
 [ext_resource path="res://Cards/CardBlank/blank_description.png" type="Texture" id=8]
 [ext_resource path="res://Cards/CardBlank/blank_background.png" type="Texture" id=9]
 [ext_resource path="res://Cards/CardBlank/blank_border.png" type="Texture" id=10]
+[ext_resource path="res://Cards/CardBlank/focus_glow.png" type="Texture" id=11]
 
 [sub_resource type="DynamicFont" id=1]
 size = 36
@@ -31,19 +32,28 @@ size = 40
 outline_size = 2
 font_data = ExtResource( 5 )
 
-[sub_resource type="RectangleShape2D" id=4]
-extents = Vector2( 181, 256 )
-
-[node name="Card" type="Area2D"]
-scale = Vector2( 0.75, 0.75 )
+[node name="Card" type="Node2D"]
 script = ExtResource( 6 )
 __meta__ = {
-"_edit_group_": true,
-"_edit_lock_": true
+"_edit_group_": true
 }
 
-[node name="Background" type="Sprite" parent="."]
-texture = ExtResource( 9 )
+[node name="FocusGlow" type="Sprite" parent="."]
+texture = ExtResource( 11 )
+
+[node name="BackgroundButton" type="TextureButton" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -182.0
+margin_top = -257.0
+margin_right = 182.0
+margin_bottom = 257.0
+texture_normal = ExtResource( 9 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Image" type="Sprite" parent="."]
 position = Vector2( 0, -78 )
@@ -122,6 +132,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
-shape = SubResource( 4 )
+[node name="Tween" type="Tween" parent="."]
+[connection signal="mouse_entered" from="BackgroundButton" to="." method="_on_BackgroundButton_mouse_entered"]
+[connection signal="mouse_exited" from="BackgroundButton" to="." method="_on_BackgroundButton_mouse_exited"]

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/blank_background.png-52068f9be2beb82f946c07ec3b69c6f9.stex"
+path="res://.import/focus_glow.png-08f1f2eac9d686e48a2e4a5d8132b243.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Cards/CardBlank/blank_background.png"
-dest_files=[ "res://.import/blank_background.png-52068f9be2beb82f946c07ec3b69c6f9.stex" ]
+source_file="res://Cards/CardBlank/focus_glow.png"
+dest_files=[ "res://.import/focus_glow.png-08f1f2eac9d686e48a2e4a5d8132b243.stex" ]
 
 [params]
 
