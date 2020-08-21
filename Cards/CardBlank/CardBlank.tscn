@@ -41,19 +41,8 @@ __meta__ = {
 [node name="FocusGlow" type="Sprite" parent="."]
 texture = ExtResource( 11 )
 
-[node name="BackgroundButton" type="TextureButton" parent="."]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -182.0
-margin_top = -257.0
-margin_right = 182.0
-margin_bottom = 257.0
-texture_normal = ExtResource( 9 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="Background" type="Sprite" parent="."]
+texture = ExtResource( 9 )
 
 [node name="Image" type="Sprite" parent="."]
 position = Vector2( 0, -78 )
@@ -133,5 +122,20 @@ __meta__ = {
 }
 
 [node name="Tween" type="Tween" parent="."]
-[connection signal="mouse_entered" from="BackgroundButton" to="." method="_on_BackgroundButton_mouse_entered"]
-[connection signal="mouse_exited" from="BackgroundButton" to="." method="_on_BackgroundButton_mouse_exited"]
+
+[node name="FocusButton" type="TextureButton" parent="."]
+modulate = Color( 1, 1, 1, 0 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -182.0
+margin_top = -257.0
+margin_right = 182.0
+margin_bottom = 257.0
+texture_normal = ExtResource( 9 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="mouse_entered" from="FocusButton" to="." method="make_focused"]
+[connection signal="mouse_exited" from="FocusButton" to="." method="make_unfocused"]

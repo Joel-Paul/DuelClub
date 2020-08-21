@@ -6,7 +6,9 @@ var size setget , get_size
 var width setget , get_width
 var height setget , get_height
 
-const SCALE_DEFAULT = Vector2(0.75, 0.75)
+signal focused(card)
+
+onready var tween = $Tween
 
 
 func _ready():
@@ -14,32 +16,39 @@ func _ready():
 
 
 func get_size() -> Vector2:
-	return $BackgroundButton.texture_normal.get_size()
+	return $Background.texture.get_size()
 
 
 func get_width() -> float:
-	return $BackgroundButton.texture_normal.get_width()
+	return $Background.texture.get_width()
 
 
 func get_height() -> float:
-	return $BackgroundButton.texture_normal.get_height()
+	return $Background.texture.get_height()
 
 
-func tween_to(target_pos: Vector2) -> void:
-	pass
+func tween_to_pos(target_pos: Vector2) -> void:
+	tween.interpolate_property(self, "position", position,
+			target_pos, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+	tween.start()
 
 
-func make_focused():
+func tween_to_rot(target_rot: float) -> void:
+	tween.interpolate_property(self, "rotation", rotation,
+			target_rot, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+	tween.start()
+
+
+func tween_to_scale(target_scale: Vector2) -> void:
+	tween.interpolate_property(self, "scale", scale,
+			target_scale, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+	tween.start()
+
+
+func make_focused() -> void:
 	$FocusGlow.visible = true
+	emit_signal("focused", self)
 
 
-func make_unfocused():
+func make_unfocused() -> void:
 	$FocusGlow.visible = false
-
-
-func _on_BackgroundButton_mouse_entered():
-	make_focused()
-
-
-func _on_BackgroundButton_mouse_exited():
-	make_unfocused()
