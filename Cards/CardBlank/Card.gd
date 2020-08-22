@@ -7,30 +7,32 @@ var width setget , get_width
 var height setget , get_height
 
 signal focused(card)
+signal unfocused
 
 onready var tween = $Tween
-
+onready var default_z_index = z_index
+onready var focus_glow = $FocusGlow
 
 func _ready():
-	$FocusGlow.visible = false
+	focus_glow.visible = false
 	$FocusButton.visible = false
 
 
 func get_size() -> Vector2:
-	return $Background.texture.get_size()
+	return $Background.texture.get_size() * scale
 
 
 func get_width() -> float:
-	return $Background.texture.get_width()
+	return $Background.texture.get_width() * scale.x
 
 
 func get_height() -> float:
-	return $Background.texture.get_height()
+	return $Background.texture.get_height() * scale.y
 
 
 func tween_to_pos(target_pos: Vector2) -> void:
 	tween.interpolate_property(self, "position", position,
-			target_pos, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+			target_pos, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 	tween.start()
 
 
@@ -47,12 +49,15 @@ func tween_to_scale(target_scale: Vector2) -> void:
 
 
 func make_focused() -> void:
-	$FocusGlow.visible = true
+	focus_glow.visible = true
+	z_index = 99
 	emit_signal("focused", self)
 
 
 func make_unfocused() -> void:
-	$FocusGlow.visible = false
+	focus_glow.visible = false
+	z_index = default_z_index
+	emit_signal("unfocused")
 
 
 func _on_Timer_timeout():
