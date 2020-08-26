@@ -1,18 +1,19 @@
+tool
 extends Node2D
 
-
-const MAX_DIST = 0.75
-const DIST_CURVE = -0.05
-const POS_CURVE = 0.25
-
-const MAX_ANGLE = PI
-const ANGLE_STEEPNES = 0.0005
 
 const SCALE_START = Vector2(0.5, 0.5)
 const SCALE_DEFAULT = Vector2(0.66, 0.66)
 const SCALE_FOCUS = Vector2(0.75, 0.75)
 
-var dist = MAX_DIST
+export var max_dist: float = 0.75
+export var dist_curve: float = -0.05
+export var pos_curve: float = 0.25
+
+export(float, 0, 360, 0.01) var max_angle = 180
+export var angle_curve: float = 0.5
+
+var dist = max_dist
 
 
 func add_card(card: Card, position: Vector2) -> void:
@@ -25,7 +26,7 @@ func add_card(card: Card, position: Vector2) -> void:
 
 
 func update_hand(focus_card:Card = null) -> void:
-	dist = MAX_DIST * exp($Cards.get_child_count() * DIST_CURVE)
+	dist = max_dist * exp($Cards.get_child_count() * dist_curve)
 	for card in $Cards.get_children():
 		var card_scale = SCALE_DEFAULT
 		var card_rot = target_rot(card)
@@ -53,10 +54,30 @@ func target_pos(card: Card) -> Vector2:
 	var index: float = card.get_index()
 	
 	var x_pos: float = (index - (size - 1.0) / 2.0) * card.width / card.scale.x * SCALE_DEFAULT.x * dist
-	var y_pos: float = x_pos * x_pos / get_viewport_rect().size.x * POS_CURVE
+	var y_pos: float = x_pos * x_pos / get_viewport_rect().size.x * pos_curve
 	
 	return Vector2(x_pos, y_pos)
 
 
 func target_rot(card: Card) -> float:
-	return MAX_ANGLE / (1 + exp(-ANGLE_STEEPNES * target_pos(card).x)) - MAX_ANGLE / 2
+	return deg2rad(max_angle) / (1 + exp(-angle_curve / 1000 * target_pos(card).x)) - deg2rad(max_angle) / 2
+
+
+func _process(delta):
+	if Engine.editor_hint:
+		update()
+
+
+func _draw():
+	if Engine.editor_hint:
+		var points = PoolVector2Array()
+		for x in range(-512, 512, 64):
+			var y: float = x * x / get_viewport_rect().size.x * pos_curve
+			points.append(Vector2(x, y))
+			
+			var angle = deg2rad(max_angle) / (1 + exp(-angle_curve / 1000 * x)) - deg2rad(max_angle) / 2
+			var dir_start = Vector2(sin(angle), -cos(angle)) * 32 + Vector2(x, y)
+			var dir_end = -Vector2(sin(angle), -cos(angle)) * 32 + Vector2(x, y)
+			draw_line(dir_start, dir_end, Color.cornflower, 2.0, true)
+			
+		draw_polyline(points, Color.red, 2.0, true)

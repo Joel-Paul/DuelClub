@@ -8,9 +8,6 @@ var CardBlank := load("res://Cards/CardBlank/CardBlank.tscn")
 
 
 func _ready() -> void:
-	hand.position.x = get_viewport_rect().size.x / 2
-	hand.position.y = get_viewport_rect().size.y * 0.95
-	
 	for i in range(10):
 		draw_deck.add_card(CardBlank.instance())
 

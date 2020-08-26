@@ -15,4 +15,5 @@ position = Vector2( 110.275, 920.828 )
 scale = Vector2( 0.5, 0.5 )
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
+position = Vector2( 960, 1026 )
 [connection signal="card_drawn" from="DrawDeck" to="." method="_on_DrawDeck_card_drawn"]
