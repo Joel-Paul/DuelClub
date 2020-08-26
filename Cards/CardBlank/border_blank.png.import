@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/blank_border.png-6dc8a6946b27746eaf8b1df5bdfa5607.stex"
+path="res://.import/border_blank.png-a3c469f965753b62a5a79db7bfa08725.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Cards/CardBlank/blank_border.png"
-dest_files=[ "res://.import/blank_border.png-6dc8a6946b27746eaf8b1df5bdfa5607.stex" ]
+source_file="res://Cards/CardBlank/border_blank.png"
+dest_files=[ "res://.import/border_blank.png-a3c469f965753b62a5a79db7bfa08725.stex" ]
 
 [params]
 

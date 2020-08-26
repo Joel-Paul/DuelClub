@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/blank_background.png-52068f9be2beb82f946c07ec3b69c6f9.stex"
+path="res://.import/title_blank.png-01242b7a20a9e3929e2eab83db229009.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Cards/CardBlank/blank_background.png"
-dest_files=[ "res://.import/blank_background.png-52068f9be2beb82f946c07ec3b69c6f9.stex" ]
+source_file="res://Cards/CardBlank/title_blank.png"
+dest_files=[ "res://.import/title_blank.png-01242b7a20a9e3929e2eab83db229009.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=true
 flags/anisotropic=false
 flags/srgb=2

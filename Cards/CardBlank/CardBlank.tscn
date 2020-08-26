@@ -1,16 +1,16 @@
 [gd_scene load_steps=15 format=2]
 
-[ext_resource path="res://Cards/CardBlank/blank_image.png" type="Texture" id=1]
-[ext_resource path="res://Cards/CardBlank/blank_label.png" type="Texture" id=2]
+[ext_resource path="res://Cards/CardBlank/image_blank.png" type="Texture" id=1]
+[ext_resource path="res://Cards/CardBlank/title_blank.png" type="Texture" id=2]
 [ext_resource path="res://Fonts/Lora/Lora-VariableFont_wght.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://Fonts/Roboto/Roboto-Regular.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://Fonts/Roboto/Roboto-Bold.ttf" type="DynamicFontData" id=5]
 [ext_resource path="res://Cards/CardBlank/Card.gd" type="Script" id=6]
-[ext_resource path="res://Cards/CardBlank/blank_cost.png" type="Texture" id=7]
-[ext_resource path="res://Cards/CardBlank/blank_description.png" type="Texture" id=8]
-[ext_resource path="res://Cards/CardBlank/blank_background.png" type="Texture" id=9]
-[ext_resource path="res://Cards/CardBlank/blank_border.png" type="Texture" id=10]
-[ext_resource path="res://Cards/CardBlank/focus_glow.png" type="Texture" id=11]
+[ext_resource path="res://Cards/CardBlank/cost_blank.png" type="Texture" id=7]
+[ext_resource path="res://Cards/CardBlank/description_blank.png" type="Texture" id=8]
+[ext_resource path="res://Cards/CardBlank/background_blank.png" type="Texture" id=9]
+[ext_resource path="res://Cards/CardBlank/border_blank.png" type="Texture" id=10]
+[ext_resource path="res://Cards/CardBlank/glow_blank.png" type="Texture" id=11]
 
 [sub_resource type="DynamicFont" id=1]
 size = 36
@@ -121,8 +121,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Tween" type="Tween" parent="."]
-
 [node name="FocusButton" type="TextureButton" parent="."]
 modulate = Color( 1, 1, 1, 0 )
 anchor_left = 0.5
@@ -138,9 +136,11 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Timer" type="Timer" parent="."]
+[node name="Tween" type="Tween" parent="."]
+
+[node name="DisabledTimer" type="Timer" parent="."]
 one_shot = true
 autostart = true
 [connection signal="mouse_entered" from="FocusButton" to="." method="make_focused"]
 [connection signal="mouse_exited" from="FocusButton" to="." method="make_unfocused"]
-[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="timeout" from="DisabledTimer" to="." method="_on_Timer_timeout"]

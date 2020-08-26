@@ -13,6 +13,7 @@ onready var tween = $Tween
 onready var default_z_index = z_index
 onready var focus_glow = $FocusGlow
 
+
 func _ready():
 	focus_glow.visible = false
 	$FocusButton.visible = false
@@ -50,7 +51,7 @@ func tween_to_scale(target_scale: Vector2) -> void:
 
 func make_focused() -> void:
 	focus_glow.visible = true
-	z_index = 99
+	z_index = 32
 	emit_signal("focused", self)
 
 
