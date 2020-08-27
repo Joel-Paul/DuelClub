@@ -6,6 +6,8 @@ const SCALE_START = Vector2(0.5, 0.5)
 const SCALE_DEFAULT = Vector2(0.66, 0.66)
 const SCALE_FOCUS = Vector2(0.75, 0.75)
 
+signal card_released(card)
+
 export var max_dist: float = 0.75
 export var dist_curve: float = -0.05
 export var pos_curve: float = 0.25
@@ -18,17 +20,10 @@ var selected_card: Card = null
 var offset := Vector2(0, 0)
 
 
-func _process(delta):
-	if Engine.editor_hint:
-		update()
-	elif selected_card != null:
-		selected_card.global_position = get_global_mouse_position() - offset
-
-
 func _draw():
 	if Engine.editor_hint:
 		var points = PoolVector2Array()
-		for x in range(-512, 512, 64):
+		for x in range(-512, 513, 64):
 			var y: float = x * x / get_viewport_rect().size.x * pos_curve
 			points.append(Vector2(x, y))
 			
@@ -38,6 +33,13 @@ func _draw():
 			draw_line(dir_start, dir_end, Color.cornflower, 2.0, true)
 			
 		draw_polyline(points, Color.red, 2.0, true)
+
+
+func _process(_delta):
+	if Engine.editor_hint:
+		update()
+	elif selected_card != null:
+		selected_card.global_position = get_global_mouse_position() - offset
 
 
 func add_card(card: Card, position: Vector2) -> void:
@@ -52,6 +54,7 @@ func add_card(card: Card, position: Vector2) -> void:
 
 
 func update_hand(focus_card: Card = null) -> void:
+	selected_card = null
 	dist = max_dist * exp($Cards.get_child_count() * dist_curve)
 	for card in $Cards.get_children():
 		var card_scale = SCALE_DEFAULT
@@ -94,6 +97,10 @@ func select_card(card: Card) -> void:
 	offset = get_global_mouse_position() - selected_card.global_position
 
 
-func release_card() -> void:
+func release_card(card: Card) -> void:
 	selected_card = null
-	update_hand()
+	emit_signal("card_released", card)
+
+
+func remove_card(card: Card) -> void:
+	card.kill()

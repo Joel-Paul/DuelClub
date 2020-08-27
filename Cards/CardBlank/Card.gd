@@ -10,7 +10,7 @@ var height setget , get_height
 signal focused(card)
 signal unfocused
 signal pressed(card)
-signal released
+signal released(card)
 
 export(String) var title = "[Title]"
 export(String, MULTILINE) var description = "[Description]"
@@ -32,7 +32,7 @@ func _ready():
 	$Cost/Label.text = String(cost)
 
 
-func _process(delta):
+func _process(_delta):
 	if Engine.editor_hint:
 		$Title/Label.text = title
 		$Description/RichTextLabel.text = description
@@ -69,6 +69,10 @@ func tween_to_scale(target_scale: Vector2) -> void:
 	tween.start()
 
 
+func kill() -> void:
+	queue_free()
+
+
 func make_focused() -> void:
 	focus_glow.visible = true
 	z_index = 32
@@ -90,4 +94,4 @@ func _on_CardButton_pressed():
 
 
 func _on_CardButton_button_up():
-	emit_signal("released")
+	emit_signal("released", self)
