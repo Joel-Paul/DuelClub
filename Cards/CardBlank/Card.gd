@@ -1,3 +1,4 @@
+tool
 class_name Card
 extends Node2D
 
@@ -8,6 +9,14 @@ var height setget , get_height
 
 signal focused(card)
 signal unfocused
+signal pressed(card)
+signal released
+
+export(String) var title = "[Title]"
+export(String, MULTILINE) var description = "[Description]"
+export(int) var cost = 0
+export(Global.Stance) var stance = Global.Stance.NONE
+export(Array, Resource) var effects
 
 onready var tween = $Tween
 onready var default_z_index = z_index
@@ -16,7 +25,18 @@ onready var focus_glow = $FocusGlow
 
 func _ready():
 	focus_glow.visible = false
-	$FocusButton.visible = false
+	$CardButton.visible = false
+	
+	$Title/Label.text = title
+	$Description/RichTextLabel.text = description
+	$Cost/Label.text = String(cost)
+
+
+func _process(delta):
+	if Engine.editor_hint:
+		$Title/Label.text = title
+		$Description/RichTextLabel.text = description
+		$Cost/Label.text = String(cost)
 
 
 func get_size() -> Vector2:
@@ -62,4 +82,12 @@ func make_unfocused() -> void:
 
 
 func _on_Timer_timeout():
-	$FocusButton.visible = true
+	$CardButton.visible = true
+
+
+func _on_CardButton_pressed():
+	emit_signal("pressed", self)
+
+
+func _on_CardButton_button_up():
+	emit_signal("released")

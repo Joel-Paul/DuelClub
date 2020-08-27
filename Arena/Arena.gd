@@ -1,18 +1,24 @@
 extends Node2D
 
 
-onready var draw_deck = $DrawDeck
+onready var player_deck = $PlayerDeck
 onready var hand = $Hand
 
-var CardBlank := load("res://Cards/CardBlank/CardBlank.tscn")
+var CardExpelliarmus := load("res://Cards/CardExpelliarmus/CardExpelliarmus.tscn")
+var CardFlipendo := load("res://Cards/CardFlipendo/CardFlipendo.tscn")
+var CardRictusempra := load("res://Cards/CardRictusempra/CardRictusempra.tscn")
+
+var cards = [CardExpelliarmus, CardFlipendo, CardRictusempra]
 
 
 func _ready() -> void:
-	for i in range(10):
-		draw_deck.add_card(CardBlank.instance())
+	for _i in range(10):
+		cards.shuffle()
+		var rand_card = cards.front()
+		player_deck.add_card(rand_card.instance())
 
 
 func _on_DrawDeck_card_drawn(card: Card) -> void:
 	if (card != null):
-		hand.add_card(card, draw_deck.global_position)
+		hand.add_card(card, player_deck.global_position)
 	

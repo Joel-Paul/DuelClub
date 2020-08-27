@@ -2,9 +2,11 @@
 
 [ext_resource path="res://Cards/CardBlank/CardBlank.tscn" type="PackedScene" id=1]
 
-
-
 [node name="CardRictusempra" instance=ExtResource( 1 )]
+title = "Rictusempra"
+description = "Great for tickling anyone in your path, friend or foe."
+cost = 1
+stance = 3
 
 [node name="Label" parent="Title" index="1"]
 text = "Rictusempra"

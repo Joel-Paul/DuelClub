@@ -39,6 +39,7 @@ __meta__ = {
 }
 
 [node name="FocusGlow" type="Sprite" parent="."]
+visible = false
 texture = ExtResource( 11 )
 
 [node name="Background" type="Sprite" parent="."]
@@ -121,7 +122,8 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="FocusButton" type="TextureButton" parent="."]
+[node name="CardButton" type="TextureButton" parent="."]
+visible = false
 modulate = Color( 1, 1, 1, 0 )
 anchor_left = 0.5
 anchor_top = 0.5
@@ -131,6 +133,7 @@ margin_left = -182.0
 margin_top = -257.0
 margin_right = 182.0
 margin_bottom = 257.0
+action_mode = 0
 texture_normal = ExtResource( 9 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -139,8 +142,11 @@ __meta__ = {
 [node name="Tween" type="Tween" parent="."]
 
 [node name="DisabledTimer" type="Timer" parent="."]
+wait_time = 0.5
 one_shot = true
 autostart = true
-[connection signal="mouse_entered" from="FocusButton" to="." method="make_focused"]
-[connection signal="mouse_exited" from="FocusButton" to="." method="make_unfocused"]
+[connection signal="button_up" from="CardButton" to="." method="_on_CardButton_button_up"]
+[connection signal="mouse_entered" from="CardButton" to="." method="make_focused"]
+[connection signal="mouse_exited" from="CardButton" to="." method="make_unfocused"]
+[connection signal="pressed" from="CardButton" to="." method="_on_CardButton_pressed"]
 [connection signal="timeout" from="DisabledTimer" to="." method="_on_Timer_timeout"]
