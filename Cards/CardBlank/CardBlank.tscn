@@ -139,8 +139,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Tween" type="Tween" parent="."]
-
 [node name="DisabledTimer" type="Timer" parent="."]
 wait_time = 0.5
 one_shot = true

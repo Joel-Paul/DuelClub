@@ -9,7 +9,6 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_horizontal_guides_": [  ]
 }
-play_area = 0.5
 
 [node name="PlayerDeck" parent="." instance=ExtResource( 1 )]
 position = Vector2( 110, 930 )
@@ -17,5 +16,5 @@ scale = Vector2( 0.5, 0.5 )
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 960, 1026 )
-[connection signal="card_drawn" from="PlayerDeck" to="." method="_on_DrawDeck_card_drawn"]
+[connection signal="card_drawn" from="PlayerDeck" to="." method="_on_PlayerDeck_card_drawn"]
 [connection signal="card_released" from="Hand" to="." method="_on_Hand_card_released"]

@@ -1,17 +1,20 @@
 tool
 extends Node2D
+# Stores a list of cards as children of a node and displays them curve.
+# The curve and angles of the cards in the hand can be modified.
 
 
+signal card_released(card)
+
+# Various scale constants for cards.
 const SCALE_START = Vector2(0.5, 0.5)
 const SCALE_DEFAULT = Vector2(0.66, 0.66)
 const SCALE_FOCUS = Vector2(0.75, 0.75)
 
-signal card_released(card)
-
+# Tweakable variables that impact the cards' position and rotation.
 export var max_dist: float = 0.75
 export var dist_curve: float = -0.05
 export var pos_curve: float = 0.25
-
 export(float, 0, 360, 0.01) var max_angle = 180
 export var angle_curve: float = 0.5
 
@@ -21,47 +24,59 @@ var offset := Vector2(0, 0)
 
 
 func _draw():
+	# Draws a preview of the hand's position in the editor.
 	if Engine.editor_hint:
 		var points = PoolVector2Array()
 		for x in range(-512, 513, 64):
+			# Store the points along the curve.
 			var y: float = x * x / get_viewport_rect().size.x * pos_curve
 			points.append(Vector2(x, y))
 			
+			# Draw a line representing the angle of the cards at each point.
 			var angle = deg2rad(max_angle) / (1 + exp(-angle_curve / 1000 * x)) - deg2rad(max_angle) / 2
 			var dir_start = Vector2(sin(angle), -cos(angle)) * 32 + Vector2(x, y)
 			var dir_end = -Vector2(sin(angle), -cos(angle)) * 32 + Vector2(x, y)
 			draw_line(dir_start, dir_end, Color.cornflower, 2.0, true)
-			
+		# Use the stored points to draw a line.
 		draw_polyline(points, Color.red, 2.0, true)
 
 
 func _process(_delta):
 	if Engine.editor_hint:
+		# Updates _draw().
 		update()
 	elif selected_card != null:
+		# Move the card relative the mouse when selected.
 		selected_card.global_position = get_global_mouse_position() - offset
 
 
+# Add a card to the hand and spawn it at the given position.
 func add_card(card: Card, position: Vector2) -> void:
 	$Cards.add_child(card)
 	card.global_position = position
 	card.scale = SCALE_START
+	update_hand()
+	
 	card.connect("focused", self, "update_hand")
 	card.connect("unfocused", self, "update_hand")
 	card.connect("pressed", self, "select_card")
 	card.connect("released", self, "release_card")
-	update_hand()
 
 
+# Move all cards to their appropriate positions.
+# If a `focus_card` is given, make extra space for it.
 func update_hand(focus_card: Card = null) -> void:
 	selected_card = null
+	# `dist` represents the distance of each card from each other.
 	dist = max_dist * exp($Cards.get_child_count() * dist_curve)
+	
 	for card in $Cards.get_children():
 		var card_scale = SCALE_DEFAULT
 		var card_rot = target_rot(card)
 		var card_pos = target_pos(card)
 		
 		if (focus_card == card):
+			# Focus on this card (make it larger, etc.).
 			card_scale = SCALE_FOCUS
 			card.scale = card_scale
 			card_rot = 0
@@ -69,15 +84,23 @@ func update_hand(focus_card: Card = null) -> void:
 			card_pos.y = -card.height / 3
 			card.position.y = card_pos.y
 		elif (focus_card != null):
+			# `focus_card` exists, but it's not this card, so displace this card
+			# by a certain amount depening on how far it is from `focus_card`.
 			var disp: float = (focus_card.width / 2) / (card.get_index() - focus_card.get_index())
 			card_pos += Vector2(disp, 0)
 		
-		card.tween_to_scale(card_scale)
-		card.tween_to_rot(card_rot)
-		card.tween_to_pos(card_pos)
+		# Add properties to interpolate
+		$Tween.interpolate_property(card, "scale", card.scale,
+			card_scale, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+		$Tween.interpolate_property(card, "rotation", card.rotation,
+			card_rot, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+		$Tween.interpolate_property(card, "position", card.position,
+			card_pos, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
+	
+	$Tween.start()
 
 
-# Returns the coordinate position we want the card to go to.
+# Returns the coordinate position we want the card in the hand to go to.
 func target_pos(card: Card) -> Vector2:
 	var size: float = $Cards.get_child_count()
 	var index: float = card.get_index()
@@ -88,19 +111,23 @@ func target_pos(card: Card) -> Vector2:
 	return Vector2(x_pos, y_pos)
 
 
+# Returns the rotation in radians we want the card in the hand to be at.
 func target_rot(card: Card) -> float:
 	return deg2rad(max_angle) / (1 + exp(-angle_curve / 1000 * target_pos(card).x)) - deg2rad(max_angle) / 2
 	
 
+# Stores a reference to the selected card.
 func select_card(card: Card) -> void:
 	selected_card = card
 	offset = get_global_mouse_position() - selected_card.global_position
 
 
+# Emits a signal when a card is released.
 func release_card(card: Card) -> void:
 	selected_card = null
 	emit_signal("card_released", card)
 
 
+# Removes the given card.
 func remove_card(card: Card) -> void:
 	card.kill()

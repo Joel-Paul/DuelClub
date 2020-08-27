@@ -1,11 +1,9 @@
 tool
 class_name Card
 extends Node2D
+# A playing card for a card game :O.
+# Stores all the properties of the card within itself.
 
-
-var size setget , get_size
-var width setget , get_width
-var height setget , get_height
 
 signal focused(card)
 signal unfocused
@@ -17,6 +15,10 @@ export(String, MULTILINE) var description = "[Description]"
 export(int) var cost = 0
 export(Global.Stance) var stance = Global.Stance.NONE
 export(Array, Resource) var effects
+
+var size setget , get_size
+var width setget , get_width
+var height setget , get_height
 
 onready var tween = $Tween
 onready var default_z_index = z_index
@@ -34,6 +36,7 @@ func _ready():
 
 func _process(_delta):
 	if Engine.editor_hint:
+		# Update the card visually.
 		$Title/Label.text = title
 		$Description/RichTextLabel.text = description
 		$Cost/Label.text = String(cost)
@@ -51,40 +54,26 @@ func get_height() -> float:
 	return $Background.texture.get_height() * scale.y
 
 
-func tween_to_pos(target_pos: Vector2) -> void:
-	tween.interpolate_property(self, "position", position,
-			target_pos, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
-	tween.start()
-
-
-func tween_to_rot(target_rot: float) -> void:
-	tween.interpolate_property(self, "rotation", rotation,
-			target_rot, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
-	tween.start()
-
-
-func tween_to_scale(target_scale: Vector2) -> void:
-	tween.interpolate_property(self, "scale", scale,
-			target_scale, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
-	tween.start()
-
-
+# Removes the card from memory.
 func kill() -> void:
 	queue_free()
 
 
+# Adds a glow behind the card when hovered over and brings it to the front.
 func make_focused() -> void:
 	focus_glow.visible = true
 	z_index = 32
 	emit_signal("focused", self)
 
 
+# Returns the card to its original state prior to hover over.
 func make_unfocused() -> void:
 	focus_glow.visible = false
 	z_index = default_z_index
 	emit_signal("unfocused")
 
 
+# Enabled the card to be selected after a brief period.
 func _on_Timer_timeout():
 	$CardButton.visible = true
 
