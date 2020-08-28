@@ -14,31 +14,27 @@ export(String) var title = "[Title]"
 export(String, MULTILINE) var description = "[Description]"
 export(int) var cost = 0
 export(Global.Stance) var stance = Global.Stance.NONE
-export(Array, Resource) var effects
+export(Array, Resource) var abilities
 
 var size setget , get_size
 var width setget , get_width
 var height setget , get_height
 
-onready var tween = $Tween
 onready var default_z_index = z_index
-onready var focus_glow = $FocusGlow
 
 
 func _ready():
-	focus_glow.visible = false
-	$CardButton.visible = false
-	
 	$Title/Label.text = title
-	$Description/RichTextLabel.text = description
+	$Description/RichTextLabel.bbcode_text = description
 	$Cost/Label.text = String(cost)
+	disable()
 
 
 func _process(_delta):
 	if Engine.editor_hint:
 		# Update the card visually.
 		$Title/Label.text = title
-		$Description/RichTextLabel.text = description
+		$Description/RichTextLabel.bbcode_text = description
 		$Cost/Label.text = String(cost)
 
 
@@ -54,21 +50,27 @@ func get_height() -> float:
 	return $Background.texture.get_height() * scale.y
 
 
-# Removes the card from memory.
-func kill() -> void:
-	queue_free()
+# Resets the card's timer.
+func reset_timer() -> void:
+	$DisabledTimer.autostart = true
+
+
+# Prevents the card from being interactable.
+func disable() -> void:
+	$FocusGlow.visible = false
+	$CardButton.visible = false
 
 
 # Adds a glow behind the card when hovered over and brings it to the front.
 func make_focused() -> void:
-	focus_glow.visible = true
+	$FocusGlow.visible = true
 	z_index = 32
 	emit_signal("focused", self)
 
 
 # Returns the card to its original state prior to hover over.
 func make_unfocused() -> void:
-	focus_glow.visible = false
+	$FocusGlow.visible = false
 	z_index = default_z_index
 	emit_signal("unfocused")
 

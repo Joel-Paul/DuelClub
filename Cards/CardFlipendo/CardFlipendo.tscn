@@ -4,7 +4,7 @@
 
 [node name="CardFlipendo" instance=ExtResource( 1 )]
 title = "Flipendo"
-description = "Quite simply knocks back the caster's target."
+description = "Deal 10 damage"
 cost = 2
 stance = 1
 
@@ -12,8 +12,8 @@ stance = 1
 text = "Flipendo"
 
 [node name="RichTextLabel" parent="Description" index="1"]
-bbcode_text = "Quite simple knocks back the caster's target."
-text = "Quite simply knocks back the caster's target."
+bbcode_text = "Deal 10 damage"
+text = "Deal 10 damage"
 
 [node name="Label" parent="Cost" index="1"]
 text = "2"

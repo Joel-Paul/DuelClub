@@ -19,9 +19,15 @@ func update_texture() -> void:
 		$TextureButton.texture_normal = load("res://Deck/empty_deck.png")
 
 
-# Add a card to the deck.
-func add_card(card: Card) -> void:
-	deck.append(card)
+# Adds a card to the deck.
+func add_card_ontop(card: Card) -> void:
+	deck.push_back(card)
+	update_texture()
+
+
+# Adds a card to the bottom of the deck.
+func add_card_under(card: Card) -> void:
+	deck.push_front(card)
 	update_texture()
 
 
@@ -32,6 +38,6 @@ func draw_card() -> Card:
 	return card
 
 
-# When the deck is clicked, draw a card and send it with a signal.
+# When the deck is clicked, draws a card and sends it with a signal.
 func _on_TextureButton_pressed() -> void:
 	emit_signal("card_drawn", draw_card())

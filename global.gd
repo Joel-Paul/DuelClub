@@ -6,3 +6,7 @@ enum Stance {
 	DEFENSIVE,
 	SNEAKY,
 }
+
+enum Ability {
+	RETURN,
+}

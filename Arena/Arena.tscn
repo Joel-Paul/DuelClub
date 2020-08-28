@@ -16,5 +16,12 @@ scale = Vector2( 0.5, 0.5 )
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 960, 1026 )
+
+[node name="Cards" type="Node2D" parent="."]
+
+[node name="CardReturnTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
 [connection signal="card_drawn" from="PlayerDeck" to="." method="_on_PlayerDeck_card_drawn"]
 [connection signal="card_released" from="Hand" to="." method="_on_Hand_card_released"]
+[connection signal="timeout" from="CardReturnTimer" to="." method="_on_CardReturnTimer_timeout"]

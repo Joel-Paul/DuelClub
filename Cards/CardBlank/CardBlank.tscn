@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://Cards/CardBlank/image_blank.png" type="Texture" id=1]
 [ext_resource path="res://Cards/CardBlank/title_blank.png" type="Texture" id=2]
@@ -11,6 +11,7 @@
 [ext_resource path="res://Cards/CardBlank/background_blank.png" type="Texture" id=9]
 [ext_resource path="res://Cards/CardBlank/border_blank.png" type="Texture" id=10]
 [ext_resource path="res://Cards/CardBlank/glow_blank.png" type="Texture" id=11]
+[ext_resource path="res://Cards/Abilities/ability_return.tres" type="Resource" id=12]
 
 [sub_resource type="DynamicFont" id=1]
 size = 36
@@ -37,6 +38,7 @@ script = ExtResource( 6 )
 __meta__ = {
 "_edit_group_": true
 }
+abilities = [ ExtResource( 12 ) ]
 
 [node name="FocusGlow" type="Sprite" parent="."]
 visible = false

@@ -71,6 +71,8 @@ func update_hand(focus_card: Card = null) -> void:
 	dist = max_dist * exp($Cards.get_child_count() * dist_curve)
 	
 	for card in $Cards.get_children():
+		card.z_index = card.get_index()
+		
 		var card_scale = SCALE_DEFAULT
 		var card_rot = target_rot(card)
 		var card_pos = target_pos(card)
@@ -89,14 +91,29 @@ func update_hand(focus_card: Card = null) -> void:
 			var disp: float = (focus_card.width / 2) / (card.get_index() - focus_card.get_index())
 			card_pos += Vector2(disp, 0)
 		
-		# Add properties to interpolate
-		$Tween.interpolate_property(card, "scale", card.scale,
-			card_scale, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
-		$Tween.interpolate_property(card, "rotation", card.rotation,
-			card_rot, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
-		$Tween.interpolate_property(card, "position", card.position,
-			card_pos, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
-	
+		scale_card(card, card_scale)
+		rotate_card(card, card_rot)
+		move_card(card, card_pos)
+
+
+# Tweens card to a scale.
+func scale_card(card: Card, amount: Vector2):
+	$Tween.interpolate_property(card, "scale", card.scale,
+			amount, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+	$Tween.start()
+
+
+# Tweens card to a rotaiton.
+func rotate_card(card: Card, rot: float):
+	$Tween.interpolate_property(card, "rotation", card.rotation,
+			rot, 1, Tween.TRANS_QUAD, Tween.EASE_OUT)
+	$Tween.start()
+
+
+# Tweens card to a position.
+func move_card(card: Card, pos: Vector2):
+	$Tween.interpolate_property(card, "position", card.position,
+			pos, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 	$Tween.start()
 
 
@@ -126,8 +143,3 @@ func select_card(card: Card) -> void:
 func release_card(card: Card) -> void:
 	selected_card = null
 	emit_signal("card_released", card)
-
-
-# Removes the given card.
-func remove_card(card: Card) -> void:
-	card.kill()
