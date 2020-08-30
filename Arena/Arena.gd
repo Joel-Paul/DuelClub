@@ -18,19 +18,21 @@ var cards = [CardExpelliarmus, CardFlipendo, CardRictusempra]
 var queue_return = []
 var queue_delete = []
 
+onready var player_hand = $Player/Hand
+onready var player_deck = $Player/Deck
+
 
 func _ready() -> void:
 	if not Engine.editor_hint:
 		print(get_viewport_rect().size) # TODO: Remove when convienient.
 		
-		$Hand.position = get_viewport_rect().size * Vector2(0.5, 0.95)
-		$Hand/Tween.connect("tween_all_completed", self, "delete_returned_cards")
+		player_hand.position = get_viewport_rect().size * Vector2(0.5, 0.95)
 		
 		# Add 10 random cards to the deck.
 		for _i in range(10):
 			cards.shuffle()
 			var rand_card = cards.front()
-			$PlayerDeck.add_card_ontop(rand_card.instance())
+			player_deck.add_card_ontop(rand_card.instance())
 
 
 func _draw() -> void:
@@ -60,25 +62,35 @@ func activate_card(card: Card) -> void:
 # the timer has timeed out, tweens the card back to the
 # deck, adds a copy of it to the deck, then frees it.
 func return_to_deck(card: Card) -> void:
-	# If a previous card is still waiting, skip its time.
-	if ($CardReturnTimer.time_left != 0):
-		_on_CardReturnTimer_timeout()
-	# Disconnect card from hand.
+	# Prevent the card from being selected again.
+	card.disable()
+	
+	# If a previous card is still waiting, skip its wait time.
+	if ($ReturnTimer.time_left != 0):
+		_on_ReturnTimer_timeout()
+	
+	# Disconnect card from Hand node and add it to the Arena node.
 	card.position = card.global_position
 	card.get_parent().remove_child(card)
 	$Cards.add_child(card)
 	card.z_index = -1
-	$Hand.update_hand()
-	# Move card to middle of screen.
-	$Hand.scale_card(card, $Hand.SCALE_FOCUS)
-	$Hand.rotate_card(card, 0)
-	$Hand.move_card(card, get_viewport_rect().size / 2)
+	
+	# Move card to middle of screen so the player
+	# has visual indication that it has been played.
+	$Tween.interpolate_property(card, "scale", card.scale,
+			Global.SCALE_FOCUS * 0.9, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
+	$Tween.interpolate_property(card, "rotation", card.rotation,
+			0, 1, Tween.TRANS_QUAD, Tween.EASE_OUT)
+	$Tween.interpolate_property(card, "position", card.position,
+			get_viewport_rect().size / 2, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
+	$Tween.start()
+	
 	# Queue for it to move to the deck.
 	queue_return.append(card)
-	$CardReturnTimer.start()
+	$ReturnTimer.start()
 
 
-# Called whenever $Hand/Tween completes all tweens.
+# TODO delete
 func delete_returned_cards() -> void:
 	for item in queue_delete:
 		for card in $Cards.get_children():
@@ -89,7 +101,7 @@ func delete_returned_cards() -> void:
 # Add a card to the player's hand whenever PlayerDeck is clicked.
 func _on_PlayerDeck_card_drawn(card: Card) -> void:
 	if (card != null):
-		$Hand.add_card(card, $PlayerDeck.global_position)
+		player_hand.add_card(card, player_deck.global_position)
 
 
 # Determine if a card is being played when a card is released.
@@ -97,22 +109,36 @@ func _on_PlayerDeck_card_drawn(card: Card) -> void:
 func _on_Hand_card_released(card: Card) -> void:
 	var in_bounds = get_global_mouse_position().y < get_viewport_rect().size.y * vert_play_limit
 	if in_bounds:
-		card.disable()
 		activate_card(card)
-	else:
-		$Hand.update_hand()
+	player_hand.update_hand()
 
 
-# Visually moves cards back to the deck.
-func _on_CardReturnTimer_timeout() -> void:
+# Visually moves card back to the deck.
+func _on_ReturnTimer_timeout() -> void:
 	# Get next card to move
 	var card: Card = queue_return.pop_front()
+	
 	# Move card to the deck.
-	$Hand.scale_card(card, $Hand.SCALE_START * 0.9)
-	$Hand.move_card(card, $PlayerDeck.position)
+	$Tween.interpolate_property(card, "scale", card.scale,
+			Global.SCALE_START * 1, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+	$Tween.interpolate_property(card, "rotation", card.rotation,
+			0, 1, Tween.TRANS_QUAD, Tween.EASE_OUT)
+	$Tween.interpolate_property(card, "position", card.position,
+			player_deck.position, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
+	$Tween.start()
+	
 	# Add a copy of the card to the bottom of the deck.
 	var card_copy: Card = card.duplicate()
 	card_copy.reset_timer()
-	$PlayerDeck.add_card_under(card_copy)
+	player_deck.add_card_under(card_copy)
+	
 	# Queue for deletion
 	queue_delete.append(card)
+
+
+func _on_Tween_all_completed() -> void:
+	# Delete any card queued for deletion.
+	for item in queue_delete:
+		for card in $Cards.get_children():
+			if (item == card):
+				card.queue_free()

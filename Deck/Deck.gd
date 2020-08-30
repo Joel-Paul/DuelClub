@@ -14,7 +14,7 @@ func _ready() -> void:
 # Visually updates the card depending on the amount of cards left in the deck.
 func update_texture() -> void:
 	if (deck.size() > 0):
-		$TextureButton.texture_normal = load("res://Deck/filled_deck.png")
+		$TextureButton.texture_normal = load("res://Cards/CardBlank/back_blank.png")
 	else:
 		$TextureButton.texture_normal = load("res://Deck/empty_deck.png")
 

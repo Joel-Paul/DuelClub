@@ -34,6 +34,7 @@ outline_size = 2
 font_data = ExtResource( 5 )
 
 [node name="Card" type="Node2D"]
+scale = Vector2( 0.5, 0.5 )
 script = ExtResource( 6 )
 __meta__ = {
 "_edit_group_": true

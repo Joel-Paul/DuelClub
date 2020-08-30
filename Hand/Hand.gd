@@ -6,11 +6,6 @@ extends Node2D
 
 signal card_released(card)
 
-# Various scale constants for cards.
-const SCALE_START = Vector2(0.5, 0.5)
-const SCALE_DEFAULT = Vector2(0.66, 0.66)
-const SCALE_FOCUS = Vector2(0.75, 0.75)
-
 # Tweakable variables that impact the cards' position and rotation.
 export var max_dist: float = 0.75
 export var dist_curve: float = -0.05
@@ -54,7 +49,7 @@ func _process(_delta):
 func add_card(card: Card, position: Vector2) -> void:
 	$Cards.add_child(card)
 	card.global_position = position
-	card.scale = SCALE_START
+	card.scale = Global.SCALE_START
 	update_hand()
 	
 	card.connect("focused", self, "update_hand")
@@ -73,13 +68,13 @@ func update_hand(focus_card: Card = null) -> void:
 	for card in $Cards.get_children():
 		card.z_index = card.get_index()
 		
-		var card_scale = SCALE_DEFAULT
+		var card_scale = Global.SCALE_DEFAULT
 		var card_rot = target_rot(card)
 		var card_pos = target_pos(card)
 		
 		if (focus_card == card):
 			# Focus on this card (make it larger, etc.).
-			card_scale = SCALE_FOCUS
+			card_scale = Global.SCALE_FOCUS
 			card.scale = card_scale
 			card_rot = 0
 			card.rotation = card_rot
@@ -122,7 +117,7 @@ func target_pos(card: Card) -> Vector2:
 	var size: float = $Cards.get_child_count()
 	var index: float = card.get_index()
 	
-	var x_pos: float = (index - (size - 1.0) / 2.0) * card.width / card.scale.x * SCALE_DEFAULT.x * dist
+	var x_pos: float = (index - (size - 1.0) / 2.0) * card.width / card.scale.x * Global.SCALE_DEFAULT.x * dist
 	var y_pos: float = x_pos * x_pos / get_viewport_rect().size.x * pos_curve
 	
 	return Vector2(x_pos, y_pos)
