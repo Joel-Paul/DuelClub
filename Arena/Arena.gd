@@ -65,20 +65,20 @@ func return_to_deck(card: Card) -> void:
 	# Prevent the card from being selected again.
 	card.disable()
 	
-	# If a previous card is still waiting, skip its wait time.
-	if ($ReturnTimer.time_left != 0):
-		_on_ReturnTimer_timeout()
-	
 	# Disconnect card from Hand node and add it to the Arena node.
 	card.position = card.global_position
 	card.get_parent().remove_child(card)
 	$Cards.add_child(card)
 	card.z_index = -1
 	
+	# If a previous card is still waiting, skip its wait time.
+	if ($ReturnTimer.time_left != 0):
+		_on_ReturnTimer_timeout()
+	
 	# Move card to middle of screen so the player
 	# has visual indication that it has been played.
 	$Tween.interpolate_property(card, "scale", card.scale,
-			Global.SCALE_FOCUS * 0.9, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
+			Global.SCALE_FOCUS * 1.1, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 	$Tween.interpolate_property(card, "rotation", card.rotation,
 			0, 1, Tween.TRANS_QUAD, Tween.EASE_OUT)
 	$Tween.interpolate_property(card, "position", card.position,
@@ -88,14 +88,6 @@ func return_to_deck(card: Card) -> void:
 	# Queue for it to move to the deck.
 	queue_return.append(card)
 	$ReturnTimer.start()
-
-
-# TODO delete
-func delete_returned_cards() -> void:
-	for item in queue_delete:
-		for card in $Cards.get_children():
-			if (item == card):
-				card.queue_free()
 
 
 # Add a card to the player's hand whenever PlayerDeck is clicked.
