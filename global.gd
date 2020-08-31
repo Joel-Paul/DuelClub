@@ -10,6 +10,7 @@ enum Stance {
 
 enum Ability {
 	RETURN,
+	DAMAGE,
 }
 
 const SCALE_START = Vector2(0.5, 0.5)

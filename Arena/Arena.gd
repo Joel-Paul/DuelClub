@@ -54,6 +54,8 @@ func activate_card(card: Card) -> void:
 		match ability.type:
 			Global.Ability.RETURN:
 				return_to_deck(card)
+			Global.Ability.DAMAGE:
+				damage(ability.value)
 			_:
 				print("Invalid Ability!")
 
@@ -90,6 +92,10 @@ func return_to_deck(card: Card) -> void:
 	$ReturnTimer.start()
 
 
+func damage(amount: int):
+	print("Dealt ", amount, " damage!")
+
+
 # Add a card to the player's hand whenever PlayerDeck is clicked.
 func _on_PlayerDeck_card_drawn(card: Card) -> void:
 	if (card != null):
@@ -112,11 +118,11 @@ func _on_ReturnTimer_timeout() -> void:
 	
 	# Move card to the deck.
 	$Tween.interpolate_property(card, "scale", card.scale,
-			Global.SCALE_START * 1, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+			Global.SCALE_START * 0.5, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
 	$Tween.interpolate_property(card, "rotation", card.rotation,
 			0, 1, Tween.TRANS_QUAD, Tween.EASE_OUT)
 	$Tween.interpolate_property(card, "position", card.position,
-			player_deck.position, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
+			player_deck.position, 1, Tween.TRANS_QUART, Tween.EASE_IN_OUT)
 	$Tween.start()
 	
 	# Add a copy of the card to the bottom of the deck.

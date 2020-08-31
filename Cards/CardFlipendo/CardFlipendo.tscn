@@ -1,12 +1,15 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Cards/CardBlank/CardBlank.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Cards/Abilities/ability_return.tres" type="Resource" id=2]
+[ext_resource path="res://Cards/CardFlipendo/ability_damage_flipendo.tres" type="Resource" id=3]
 
 [node name="CardFlipendo" instance=ExtResource( 1 )]
 title = "Flipendo"
 description = "Deal 10 damage"
 cost = 2
 stance = 1
+abilities = [ ExtResource( 2 ), ExtResource( 3 ) ]
 
 [node name="Label" parent="Title" index="1"]
 text = "Flipendo"
