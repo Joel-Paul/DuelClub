@@ -24,18 +24,16 @@ onready var default_z_index = z_index
 
 
 func _ready():
-	$Title/Label.text = title
-	$Description/RichTextLabel.bbcode_text = description
-	$Cost/Label.text = String(cost)
+	update_text()
+	show_back()
 	disable()
+	$CardButton.modulate.a = 0
 
 
 func _process(_delta):
 	if Engine.editor_hint:
-		# Update the card visually.
-		$Title/Label.text = title
-		$Description/RichTextLabel.bbcode_text = description
-		$Cost/Label.text = String(cost)
+		show_front()
+		update_text()
 
 
 func get_size() -> Vector2:
@@ -55,16 +53,45 @@ func reset_timer() -> void:
 	$DisabledTimer.autostart = true
 
 
+# Prevents the timer from triggering.
+func disable_timer() -> void:
+	$DisabledTimer.stop()
+
+
 # Prevents the card from being interactable.
 func disable() -> void:
 	$FocusGlow.visible = false
 	$CardButton.visible = false
 
 
-# Adds a glow behind the card when hovered over and brings it to the front.
+# Shows the back of the card.
+func show_back() -> void:
+	$CardBack.visible = true
+	$Cost.visible = false
+
+
+func show_front() -> void:
+	$CardBack.visible = false
+	$Cost.visible = true
+
+
+# Updates the text on the card.
+func update_text() -> void:
+	$Title/Label.text = title
+	$Cost/Label.text = String(cost)
+	
+	# Automatically insert correct stats for the description.
+	var desc_formated = description
+	for ability in abilities:
+		match ability.type:
+			Global.Ability.DAMAGE:
+				desc_formated = desc_formated.format({"dmg": ability.value})
+	$Description/RichTextLabel.bbcode_text = desc_formated
+
+
+# Adds a glow behind the card when hovered over and emit a signal.
 func make_focused() -> void:
 	$FocusGlow.visible = true
-	z_index = 32
 	emit_signal("focused", self)
 
 

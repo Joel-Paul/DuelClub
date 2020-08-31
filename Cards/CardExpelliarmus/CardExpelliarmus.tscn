@@ -3,17 +3,20 @@
 [ext_resource path="res://Cards/CardBlank/CardBlank.tscn" type="PackedScene" id=1]
 
 [node name="CardExpelliarmus" instance=ExtResource( 1 )]
-title = "Expelliarmus"
-description = "The duelist's go-to charm, it relieves an opponent of his or her wand."
+title = "watatatata"
+description = "decimates an opponent"
 cost = 1
 stance = 2
 
 [node name="Label" parent="Title" index="1"]
-text = "Expelliarmus"
+text = "watatatata"
 
 [node name="RichTextLabel" parent="Description" index="1"]
-bbcode_text = "The duelist's go-to charm, it relieves an opponent of his or her wand."
-text = "The duelist's go-to charm, it relieves an opponent of his or her wand."
+bbcode_text = "decimates an opponent"
+text = "decimates an opponent"
 
 [node name="Label" parent="Cost" index="1"]
 text = "1"
+
+[node name="CardButton" parent="." index="8"]
+visible = false

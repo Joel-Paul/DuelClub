@@ -80,6 +80,7 @@ func update_hand(focus_card: Card = null) -> void:
 			card.rotation = card_rot
 			card_pos.y = -card.height / 3
 			card.position.y = card_pos.y
+			card.z_index = 32
 		elif (focus_card != null):
 			# `focus_card` exists, but it's not this card, so displace this card
 			# by a certain amount depening on how far it is from `focus_card`.

@@ -3,17 +3,20 @@
 [ext_resource path="res://Cards/CardBlank/CardBlank.tscn" type="PackedScene" id=1]
 
 [node name="CardRictusempra" instance=ExtResource( 1 )]
-title = "Rictusempra"
-description = "Great for tickling anyone in your path, friend or foe."
+title = "push"
+description = "deals 3 physical damage and 15 emotional damage"
 cost = 1
 stance = 3
 
 [node name="Label" parent="Title" index="1"]
-text = "Rictusempra"
+text = "push"
 
 [node name="RichTextLabel" parent="Description" index="1"]
-bbcode_text = "Great for tickling anyone in your path, friend or foe."
-text = "Great for tickling anyone in your path, friend or foe."
+bbcode_text = "deals 3 physical damage and 15 emotional damage"
+text = "deals 3 physical damage and 15 emotional damage"
 
 [node name="Label" parent="Cost" index="1"]
 text = "1"
+
+[node name="CardButton" parent="." index="8"]
+visible = false

@@ -5,18 +5,18 @@
 [ext_resource path="res://Cards/CardFlipendo/ability_damage_flipendo.tres" type="Resource" id=3]
 
 [node name="CardFlipendo" instance=ExtResource( 1 )]
-title = "Flipendo"
-description = "Deal 10 damage"
+title = "frown"
+description = "Deals {dmg} [color=#c30000]damage[/color]."
 cost = 2
 stance = 1
 abilities = [ ExtResource( 2 ), ExtResource( 3 ) ]
 
 [node name="Label" parent="Title" index="1"]
-text = "Flipendo"
+text = "frown"
 
 [node name="RichTextLabel" parent="Description" index="1"]
-bbcode_text = "Deal 10 damage"
-text = "Deal 10 damage"
+bbcode_text = "Deals 10 [color=#c30000]damage[/color]."
+text = "Deals 10 damage."
 
 [node name="Label" parent="Cost" index="1"]
 text = "2"
