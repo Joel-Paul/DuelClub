@@ -66,7 +66,7 @@ func update_hand(focus_card: Card = null) -> void:
 	dist = max_dist * exp($Cards.get_child_count() * dist_curve)
 	
 	for card in $Cards.get_children():
-		card.z_index = card.get_index()
+		card.z_index = card.get_index() + 9
 		
 		var card_scale = Global.SCALE_DEFAULT
 		var card_rot = target_rot(card)

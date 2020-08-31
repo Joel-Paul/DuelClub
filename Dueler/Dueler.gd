@@ -64,11 +64,12 @@ func return_to_deck(card: Card) -> void:
 	# Prevent the card from being selected again.
 	card.disable()
 	
+	card.z_index -= $Deck.z_index
+	
 	# Disconnect card from Hand node and add it to the Arena node.
 	card.position = card.global_position
 	card.get_parent().remove_child(card)
 	$Cards.add_child(card)
-	card.z_index = -1
 	
 	# If a previous card is still waiting, skip its wait time.
 	if ($ReturnTimer.time_left != 0):

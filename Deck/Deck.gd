@@ -8,6 +8,7 @@ var deck := []
 
 
 func _ready() -> void:
+	z_index = 8
 	update_texture()
 
 

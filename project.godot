@@ -27,7 +27,7 @@ _global_script_class_icons={
 [application]
 
 config/name="DuelClub"
-run/main_scene="res://Arena/Arena.tscn"
+run/main_scene="res://Dueler/Dueler.tscn"
 config/icon="res://icon.png"
 
 [autoload]
