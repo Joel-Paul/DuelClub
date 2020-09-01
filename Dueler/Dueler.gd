@@ -132,10 +132,10 @@ func update_health() -> void:
 func _on_PlayerDeck_card_drawn(card: Card) -> void:
 	if (card != null):
 		$Hand.add_card(card, $Deck.global_position)
-		if is_player:
-			card.show_front()
-		else:
+		if !is_player:
 			card.disable_timer()
+		else:
+			card.show_front()
 
 
 # Determine if a card is being played when a card is released.
@@ -151,14 +151,16 @@ func _on_Hand_card_released(card: Card) -> void:
 func _on_ReturnTimer_timeout() -> void:
 	# Get next card to move
 	var card: Card = queue_return.pop_front()
-	
+	card.show_back()
 	# Move card to the deck.
 	$Tween.interpolate_property(card, "scale", card.scale,
-			Global.SCALE_START * 0.5, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+			Global.SCALE_START * 0.25, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
 	$Tween.interpolate_property(card, "rotation", card.rotation,
-			0, 1, Tween.TRANS_QUAD, Tween.EASE_OUT)
+			-PI/2, 1, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
 	$Tween.interpolate_property(card, "position", card.position,
 			$Deck.position, 1, Tween.TRANS_QUART, Tween.EASE_IN_OUT)
+	$Tween.interpolate_property(card, "back_alpha", 0.0,
+			1.0, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 	$Tween.start()
 	
 	# Add a copy of the card to the bottom of the deck.

@@ -9,6 +9,7 @@ script = ExtResource( 2 )
 
 [node name="DuelerPlayer" parent="." instance=ExtResource( 1 )]
 is_player = true
+vert_play_limit = 0.75
 
 [node name="DuelerEnemy" parent="." instance=ExtResource( 1 )]
 sprite = ExtResource( 3 )

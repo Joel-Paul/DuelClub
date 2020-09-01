@@ -19,6 +19,7 @@ export(Array, Resource) var abilities
 var size setget , get_size
 var width setget , get_width
 var height setget , get_height
+var back_alpha setget set_back_alpha, get_back_alpha
 
 onready var default_z_index = z_index
 
@@ -46,6 +47,14 @@ func get_width() -> float:
 
 func get_height() -> float:
 	return $Background.texture.get_height() * scale.y
+
+
+func set_back_alpha(value: float) -> void:
+	$CardBack.modulate.a = value
+
+
+func get_back_alpha() -> float:
+	return $CardBack.modulate.a
 
 
 # Resets the card's timer.
