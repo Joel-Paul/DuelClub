@@ -12,4 +12,18 @@ is_player = true
 vert_play_limit = 0.75
 
 [node name="DuelerEnemy" parent="." instance=ExtResource( 1 )]
-sprite = ExtResource( 3 )
+sprite_texture = ExtResource( 3 )
+
+[node name="Sprite" parent="DuelerEnemy" index="0"]
+position = Vector2( 1408, 540 )
+texture = ExtResource( 3 )
+
+[node name="Hand" parent="DuelerEnemy" index="2"]
+position = Vector2( 960, 54 )
+scale = Vector2( 1, -1 )
+
+[node name="Deck" parent="DuelerEnemy" index="3"]
+position = Vector2( 1792, 160 )
+scale = Vector2( 0.5, -0.5 )
+
+[editable path="DuelerEnemy"]

@@ -50,6 +50,7 @@ func add_card(card: Card, position: Vector2) -> void:
 	$Cards.add_child(card)
 	card.global_position = position
 	card.scale = Global.SCALE_START
+	card.modulate.a = 0
 	update_hand()
 	
 	card.connect("focused", self, "update_hand")
@@ -61,7 +62,7 @@ func add_card(card: Card, position: Vector2) -> void:
 # Move all cards to their appropriate positions.
 # If a `focus_card` is given, make extra space for it.
 func update_hand(focus_card: Card = null) -> void:
-	selected_card = null
+	#selected_card = null
 	# `dist` represents the distance of each card from each other.
 	dist = max_dist * exp($Cards.get_child_count() * dist_curve)
 	
@@ -87,6 +88,8 @@ func update_hand(focus_card: Card = null) -> void:
 			var disp: float = (focus_card.width / 2) / (card.get_index() - focus_card.get_index())
 			card_pos += Vector2(disp, 0)
 		
+		$Tween.interpolate_property(card, "modulate", card.modulate,
+			Color(1, 1, 1, 1), 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 		scale_card(card, card_scale)
 		rotate_card(card, card_rot)
 		move_card(card, card_pos)

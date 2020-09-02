@@ -18,10 +18,16 @@ _global_script_classes=[ {
 "class": "Card",
 "language": "GDScript",
 "path": "res://Cards/CardBlank/Card.gd"
+}, {
+"base": "Node2D",
+"class": "Dueler",
+"language": "GDScript",
+"path": "res://Dueler/Dueler.gd"
 } ]
 _global_script_class_icons={
 "Ability": "",
-"Card": ""
+"Card": "",
+"Dueler": ""
 }
 
 [application]

@@ -1,4 +1,5 @@
 tool
+class_name Dueler
 extends Node2D
 # Holds a character sprite, deck, and card hand, and its related logic.
 # Handles the deck and card hand positions of the player 
@@ -8,8 +9,9 @@ extends Node2D
 # A float between 0-1 describing how far up the screen a card can be "played",
 # i.e. a value of 0.5 means if the player lets go of the card in
 # the top 50% of the window, the card will be considered played.
+export(String) var dueler_name = "Harry"
 export(int) var max_health := 10
-export(Texture) var sprite := load("res://Character/character_blank.png")
+export(Texture) var sprite_texture := load("res://Character/character_blank.png")
 export(bool) var is_player
 export(float, 1) var vert_play_limit := 0.5
 
@@ -17,14 +19,17 @@ var CardExpelliarmus := load("res://Cards/CardExpelliarmus/CardExpelliarmus.tscn
 var CardFlipendo := load("res://Cards/CardFlipendo/CardFlipendo.tscn")
 var CardRictusempra := load("res://Cards/CardRictusempra/CardRictusempra.tscn")
 
-var health = max_health
 var cards = [CardExpelliarmus, CardFlipendo, CardRictusempra]
 var queue_return = []
 var queue_delete = []
 
+var opponent: Dueler
+
+onready var health = max_health
+
 
 func _ready() -> void:
-	update_positions()
+	$Sprite.texture = sprite_texture
 	
 	if not Engine.editor_hint:
 		update_health()
@@ -46,29 +51,8 @@ func _draw() -> void:
 func _process(_delta) -> void:
 	# Update _draw()
 	if Engine.editor_hint:
-		update_positions()
+		$Sprite.texture = sprite_texture
 		update()
-
-
-func update_positions() -> void:
-	$Sprite.texture = sprite
-	var sprite_pos := Vector2(256, get_viewport_rect().size.y / 2)
-	var hand_pos := Vector2(0.5, 0.95) * get_viewport_rect().size
-	var deck_pos := Vector2(128, get_viewport_rect().size.y - 160)
-	if (is_player):
-		$Sprite.position = sprite_pos
-		$Hand.position = hand_pos
-		$Deck.position = deck_pos
-		
-		$Hand.scale.y = abs($Hand.scale.y)
-		$Deck.scale.y = abs($Deck.scale.y)
-	else:
-		$Sprite.position = get_viewport_rect().size - sprite_pos
-		$Hand.position = get_viewport_rect().size - hand_pos
-		$Deck.position = get_viewport_rect().size - deck_pos
-		
-		$Hand.scale.y = -abs($Hand.scale.y)
-		$Deck.scale.y = -abs($Deck.scale.y)
 
 
 # Activate the given card's abilities.
@@ -108,7 +92,7 @@ func return_to_deck(card: Card) -> void:
 	$Tween.interpolate_property(card, "rotation", card.rotation,
 			0, 1, Tween.TRANS_QUAD, Tween.EASE_OUT)
 	$Tween.interpolate_property(card, "position", card.position,
-			get_viewport_rect().size / 2, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
+			get_viewport_rect().size * Vector2(0.5, 0.5), 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 	$Tween.start()
 	
 	# Queue for it to move to the deck.
@@ -118,19 +102,48 @@ func return_to_deck(card: Card) -> void:
 
 # Deals damage to the opponent.
 func damage(amount: int) -> void:
-	print("Dealt ", amount, " damage!")
+	opponent.health -= amount
+	opponent.update_health()
+	
+	# Attack animation.
+	animate_displace(50)
+	# Delay the hurt animation by a fraction of a second.
+	yield(get_tree().create_timer(0.2), "timeout")
+	opponent.animate_displace(-30)
 
 
-# Update the health bar.
+# Updates the health bar.
 func update_health() -> void:
-	$Sprite/HealthBar.max_value = max_health
-	$Sprite/HealthBar.value = health
+	var health_bar = $Sprite/HealthBar
+	health_bar.max_value = max_health
+	health_bar.value = health
 	$Sprite/HealthBar/HealthLabel.text = "%d/%d" % [health, max_health]
+	
+	yield(get_tree().create_timer(0.5), "timeout")
+	var tween_bar = $Sprite/TweenBar
+	tween_bar.step = 0.01
+	tween_bar.max_value = max_health
+	$Tween.interpolate_property(tween_bar, "value", tween_bar.value,
+			health_bar.value, 0.5, Tween.TRANS_LINEAR, Tween.EASE_IN)
+	$Tween.start()
 
 
-# Add a card to the player's hand whenever PlayerDeck is clicked.
-func _on_PlayerDeck_card_drawn(card: Card) -> void:
-	if (card != null):
+# Displaces the sprite node by `displace`,
+# then tweens it back to the original position.
+# Used for attacking and hurt animations.
+func animate_displace(displace: int) -> void:
+	var sprite_pos = $Sprite.position
+	if !is_player:
+		displace *= -1
+	$Sprite.position.x += displace
+	$Tween.interpolate_property($Sprite, "position", $Sprite.position,
+			sprite_pos, 0.5, Tween.TRANS_QUAD, Tween.EASE_OUT)
+	$Tween.start()
+
+
+# Add a card to the hand whenever the deck is clicked.
+func _on_Deck_card_drawn(card: Card) -> void:
+	if (card != null and is_player):
 		$Hand.add_card(card, $Deck.global_position)
 		if !is_player:
 			card.disable_timer()
@@ -138,7 +151,7 @@ func _on_PlayerDeck_card_drawn(card: Card) -> void:
 			card.show_front()
 
 
-# Determine if a card is being played when a card is released.
+# Determines if a card is being played when a card is released.
 # If a card is being played, apply all its effects, otherwise do nothing.
 func _on_Hand_card_released(card: Card) -> void:
 	var in_bounds = get_global_mouse_position().y < get_viewport_rect().size.y * vert_play_limit
@@ -154,11 +167,13 @@ func _on_ReturnTimer_timeout() -> void:
 	card.show_back()
 	# Move card to the deck.
 	$Tween.interpolate_property(card, "scale", card.scale,
-			Global.SCALE_START * 0.25, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+			Global.SCALE_START * 0.9, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
 	$Tween.interpolate_property(card, "rotation", card.rotation,
-			-PI/2, 1, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
-	$Tween.interpolate_property(card, "position", card.position,
-			$Deck.position, 1, Tween.TRANS_QUART, Tween.EASE_IN_OUT)
+			-PI/2*0, 1, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
+	$Tween.interpolate_property(card, "position:x", card.position.x,
+			$Deck.position.x, 1, Tween.TRANS_QUART, Tween.EASE_IN_OUT)
+	$Tween.interpolate_property(card, "position:y", card.position.y,
+			$Deck.position.y, 1, Tween.TRANS_QUART, Tween.EASE_IN)
 	$Tween.interpolate_property(card, "back_alpha", 0.0,
 			1.0, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 	$Tween.start()

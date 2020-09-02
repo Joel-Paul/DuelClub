@@ -127,7 +127,7 @@ __meta__ = {
 visible = false
 texture = ExtResource( 13 )
 
-[node name="CardButton" type="TextureButton" parent="."]
+[node name="CardButton" type="Button" parent="."]
 visible = false
 modulate = Color( 1, 1, 1, 0 )
 anchor_left = 0.5
@@ -139,7 +139,7 @@ margin_top = -257.0
 margin_right = 182.0
 margin_bottom = 257.0
 action_mode = 0
-texture_normal = ExtResource( 13 )
+flat = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
