@@ -6,6 +6,8 @@ extends Node2D
 # and AI, and the logic of the turn-based combat.
 
 
+signal damaged(amount)
+
 # A float between 0-1 describing how far up the screen a card can be "played",
 # i.e. a value of 0.5 means if the player lets go of the card in
 # the top 50% of the window, the card will be considered played.
@@ -13,7 +15,9 @@ export(String) var dueler_name = "Harry"
 export(int) var max_health := 10
 export(Texture) var sprite_texture := load("res://Character/character_blank.png")
 export(bool) var is_player
-export(float, 1) var vert_play_limit := 0.5
+export(float, 1) var vert_play_limit := 0.66
+
+var FloatingText := preload("res://Arena/FloatingText.tscn")
 
 var CardExpelliarmus := load("res://Cards/CardExpelliarmus/CardExpelliarmus.tscn")
 var CardFlipendo := load("res://Cards/CardFlipendo/CardFlipendo.tscn")
@@ -22,18 +26,19 @@ var CardRictusempra := load("res://Cards/CardRictusempra/CardRictusempra.tscn")
 var cards = [CardExpelliarmus, CardFlipendo, CardRictusempra]
 var queue_return = []
 var queue_delete = []
-
 var opponent: Dueler
+var screen_rect: Vector2
+var total_damage: int = 0
 
-onready var health = max_health
+onready var health: int = max_health
 
 
 func _ready() -> void:
 	$Sprite.texture = sprite_texture
 	
 	if not Engine.editor_hint:
+		screen_rect = get_viewport_rect().size
 		update_health()
-		
 		# Add 10 random cards to the deck.
 		for _i in range(10):
 			cards.shuffle()
@@ -44,7 +49,7 @@ func _ready() -> void:
 func _draw() -> void:
 	if Engine.editor_hint and is_player:
 		# Draws a rectangle to visually indicate where cards can be played.
-		var size := get_viewport_rect().size * Vector2(1, vert_play_limit)
+		var size := screen_rect * Vector2(1, vert_play_limit)
 		draw_rect(Rect2(Vector2(0, 0), size), Color.dimgray, true, 1.0)
 
 
@@ -73,9 +78,6 @@ func return_to_deck(card: Card) -> void:
 	# Prevent the card from being selected again.
 	card.disable()
 	
-	# Set cards behind the deck.
-	card.z_index = $Deck.z_index - 1
-	
 	# Disconnect card from Hand node and add it to the Arena node.
 	card.position = card.global_position
 	card.get_parent().remove_child(card)
@@ -88,11 +90,11 @@ func return_to_deck(card: Card) -> void:
 	# Move card to middle of screen so the player
 	# has visual indication that it has been played.
 	$Tween.interpolate_property(card, "scale", card.scale,
-			Global.SCALE_FOCUS * 1.1, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
+			Global.SCALE_FOCUS, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 	$Tween.interpolate_property(card, "rotation", card.rotation,
 			0, 1, Tween.TRANS_QUAD, Tween.EASE_OUT)
 	$Tween.interpolate_property(card, "position", card.position,
-			get_viewport_rect().size * Vector2(0.5, 0.5), 1, Tween.TRANS_QUART, Tween.EASE_OUT)
+			screen_rect * Vector2(0.5, 0.5), 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 	$Tween.start()
 	
 	# Queue for it to move to the deck.
@@ -102,14 +104,19 @@ func return_to_deck(card: Card) -> void:
 
 # Deals damage to the opponent.
 func damage(amount: int) -> void:
-	opponent.health -= amount
-	opponent.update_health()
-	
 	# Attack animation.
 	animate_displace(50)
 	# Delay the hurt animation by a fraction of a second.
 	yield(get_tree().create_timer(0.2), "timeout")
 	opponent.animate_displace(-30)
+	
+	total_damage += amount
+	opponent.health -= amount
+	opponent.update_health()
+	
+	opponent.emit_floating_text(String(amount), Color.firebrick)
+	
+	emit_signal("damaged", amount)
 
 
 # Updates the health bar.
@@ -141,6 +148,19 @@ func animate_displace(displace: int) -> void:
 	$Tween.start()
 
 
+func in_bounds() -> bool:
+	return get_global_mouse_position().y < screen_rect.y * vert_play_limit
+
+
+func emit_floating_text(text: String, color: Color):
+	var floating_text = FloatingText.instance()
+	floating_text.text = text
+	floating_text.position = $Sprite.position + Vector2(0, -$Sprite.texture.get_height() * $Sprite.scale.y * 0.5)
+	floating_text.velocity = Vector2(rand_range(-50, 50), -100)
+	floating_text.modulate = color
+	add_child(floating_text)
+
+
 # Add a card to the hand whenever the deck is clicked.
 func _on_Deck_card_drawn(card: Card) -> void:
 	if (card != null and is_player):
@@ -154,17 +174,19 @@ func _on_Deck_card_drawn(card: Card) -> void:
 # Determines if a card is being played when a card is released.
 # If a card is being played, apply all its effects, otherwise do nothing.
 func _on_Hand_card_released(card: Card) -> void:
-	var in_bounds = get_global_mouse_position().y < get_viewport_rect().size.y * vert_play_limit
-	if in_bounds:
+	if in_bounds():
 		activate_card(card)
 	$Hand.update_hand()
 
 
-# Visually moves card back to the deck.
+# Moves a queued card back to the deck.
 func _on_ReturnTimer_timeout() -> void:
 	# Get next card to move
 	var card: Card = queue_return.pop_front()
 	card.show_back()
+	
+	# Set cards behind the deck.
+	card.z_index = $Deck.z_index - 1
 	# Move card to the deck.
 	$Tween.interpolate_property(card, "scale", card.scale,
 			Global.SCALE_START * 0.9, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
@@ -194,3 +216,13 @@ func _on_Tween_all_completed() -> void:
 		for card in $Cards.get_children():
 			if (item == card):
 				card.queue_free()
+
+
+func _on_Hand_card_moved(card: Card, pos: Vector2) -> void:
+	card.global_position = pos
+	$Hand.scale_card(card, Global.SCALE_DEFAULT)
+	
+	if in_bounds():
+		card.glow_playable()
+	else:
+		card.glow_selection()

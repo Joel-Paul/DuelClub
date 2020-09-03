@@ -5,6 +5,7 @@ extends Node2D
 
 
 signal card_released(card)
+signal card_moved(card, pos)
 
 # Tweakable variables that impact the cards' position and rotation.
 export var max_dist: float = 0.75
@@ -41,8 +42,8 @@ func _process(_delta):
 		# Updates _draw().
 		update()
 	elif selected_card != null:
-		# Move the card relative the mouse when selected.
-		selected_card.global_position = get_global_mouse_position() - offset
+		var target = get_global_mouse_position() - offset
+		emit_signal("card_moved", selected_card, target)
 
 
 # Add a card to the hand and spawn it at the given position.
@@ -62,7 +63,6 @@ func add_card(card: Card, position: Vector2) -> void:
 # Move all cards to their appropriate positions.
 # If a `focus_card` is given, make extra space for it.
 func update_hand(focus_card: Card = null) -> void:
-	#selected_card = null
 	# `dist` represents the distance of each card from each other.
 	dist = max_dist * exp($Cards.get_child_count() * dist_curve)
 	
@@ -98,7 +98,7 @@ func update_hand(focus_card: Card = null) -> void:
 # Tweens card to a scale.
 func scale_card(card: Card, amount: Vector2):
 	$Tween.interpolate_property(card, "scale", card.scale,
-			amount, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+			amount, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 	$Tween.start()
 
 

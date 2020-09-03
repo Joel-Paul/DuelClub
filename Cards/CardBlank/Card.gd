@@ -28,6 +28,7 @@ func _ready():
 	update_text()
 	show_back()
 	disable()
+	glow_selection()
 	$CardButton.modulate.a = 0
 
 
@@ -55,6 +56,10 @@ func set_back_alpha(value: float) -> void:
 
 func get_back_alpha() -> float:
 	return $CardBack.modulate.a
+
+
+func start_timer() -> void:
+	$DisabledTimer.start()
 
 
 # Resets the card's timer.
@@ -96,6 +101,16 @@ func update_text() -> void:
 			Global.Ability.DAMAGE:
 				desc_formated = desc_formated.format({"dmg": ability.value})
 	$Description/RichTextLabel.bbcode_text = desc_formated
+
+
+# Glow colour when selected.
+func glow_playable() -> void:
+	$FocusGlow.modulate = Color.darkslategray
+
+
+# Glow colour when selected.
+func glow_selection() -> void:
+	$FocusGlow.modulate = Color.white
 
 
 # Adds a glow behind the card when hovered over and emit a signal.

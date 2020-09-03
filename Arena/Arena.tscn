@@ -1,18 +1,25 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Dueler/Dueler.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Arena/Arena.gd" type="Script" id=2]
 [ext_resource path="res://Character/character_enemy.png" type="Texture" id=3]
+[ext_resource path="res://ScreenShake/ScreenShake.tscn" type="PackedScene" id=4]
 
 [node name="Arena" type="Node2D"]
 script = ExtResource( 2 )
 
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 960, 540 )
+current = true
+
+[node name="ScreenShake" parent="Camera2D" instance=ExtResource( 4 )]
+
 [node name="DuelerPlayer" parent="." instance=ExtResource( 1 )]
 is_player = true
-vert_play_limit = 0.75
 
 [node name="DuelerEnemy" parent="." instance=ExtResource( 1 )]
 sprite_texture = ExtResource( 3 )
+vert_play_limit = 0.5
 
 [node name="Sprite" parent="DuelerEnemy" index="0"]
 position = Vector2( 1408, 540 )
@@ -25,5 +32,7 @@ scale = Vector2( 1, -1 )
 [node name="Deck" parent="DuelerEnemy" index="3"]
 position = Vector2( 1792, 160 )
 scale = Vector2( 0.5, -0.5 )
+[connection signal="damaged" from="DuelerPlayer" to="Camera2D/ScreenShake" method="start"]
+[connection signal="damaged" from="DuelerEnemy" to="Camera2D/ScreenShake" method="start"]
 
 [editable path="DuelerEnemy"]
