@@ -1,12 +1,17 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://Dueler/Dueler.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Arena/Dueler/Dueler.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Arena/Arena.gd" type="Script" id=2]
 [ext_resource path="res://Character/character_enemy.png" type="Texture" id=3]
 [ext_resource path="res://ScreenShake/ScreenShake.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Arena/LogicRand.gd" type="Script" id=5]
+[ext_resource path="res://Arena/GUI/GUI.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Arena/LogicPlayer.gd" type="Script" id=7]
 
-[node name="Arena" type="Node2D"]
+[node name="Arena" type="Node"]
 script = ExtResource( 2 )
+
+[node name="GUI" parent="." instance=ExtResource( 6 )]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 960, 540 )
@@ -15,11 +20,15 @@ current = true
 [node name="ScreenShake" parent="Camera2D" instance=ExtResource( 4 )]
 
 [node name="DuelerPlayer" parent="." instance=ExtResource( 1 )]
+dueler_name = "Player"
 is_player = true
 
+[node name="Logic" parent="DuelerPlayer" index="4"]
+script = ExtResource( 7 )
+
 [node name="DuelerEnemy" parent="." instance=ExtResource( 1 )]
+dueler_name = "Enemy"
 sprite_texture = ExtResource( 3 )
-vert_play_limit = 0.5
 
 [node name="Sprite" parent="DuelerEnemy" index="0"]
 position = Vector2( 1408, 540 )
@@ -32,7 +41,13 @@ scale = Vector2( 1, -1 )
 [node name="Deck" parent="DuelerEnemy" index="3"]
 position = Vector2( 1792, 160 )
 scale = Vector2( 0.5, -0.5 )
+
+[node name="Logic" parent="DuelerEnemy" index="4"]
+script = ExtResource( 5 )
+[connection signal="turn_ended" from="GUI" to="DuelerPlayer" method="emit_ended_turn"]
 [connection signal="damaged" from="DuelerPlayer" to="Camera2D/ScreenShake" method="start"]
 [connection signal="damaged" from="DuelerEnemy" to="Camera2D/ScreenShake" method="start"]
+
+[editable path="DuelerPlayer"]
 
 [editable path="DuelerEnemy"]

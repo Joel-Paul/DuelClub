@@ -1,22 +1,22 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Cards/CardBlank/CardBlank.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Cards/Abilities/ability_return.tres" type="Resource" id=2]
+[ext_resource path="res://Cards/CardExpelliarmus/ability_damage_expelliarmus.tres" type="Resource" id=3]
 
 [node name="CardExpelliarmus" instance=ExtResource( 1 )]
-title = "watatatata"
-description = "decimates an opponent"
+title = "Fireball"
+description = "only {dmg} [color=#c30000]damage[/color]."
 cost = 1
 stance = 2
+abilities = [ ExtResource( 2 ), ExtResource( 3 ) ]
 
 [node name="Label" parent="Title" index="1"]
-text = "watatatata"
+text = "Fireball"
 
 [node name="RichTextLabel" parent="Description" index="1"]
-bbcode_text = "decimates an opponent"
-text = "decimates an opponent"
+bbcode_text = "only 5 [color=#c30000]damage[/color]."
+text = "only 5 damage."
 
 [node name="Label" parent="Cost" index="1"]
 text = "1"
-
-[node name="CardButton" parent="." index="8"]
-visible = false

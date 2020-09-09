@@ -1,22 +1,22 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Cards/CardBlank/CardBlank.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Cards/Abilities/ability_return.tres" type="Resource" id=2]
+[ext_resource path="res://Cards/CardRictusempra/ability_damage_rictusempra.tres" type="Resource" id=3]
 
 [node name="CardRictusempra" instance=ExtResource( 1 )]
 title = "push"
-description = "deals 3 physical damage and 15 emotional damage"
+description = "deals {dmg} [color=#c30000]damage[/color] and 15 emotional damage"
 cost = 1
 stance = 3
+abilities = [ ExtResource( 2 ), ExtResource( 3 ) ]
 
 [node name="Label" parent="Title" index="1"]
 text = "push"
 
 [node name="RichTextLabel" parent="Description" index="1"]
-bbcode_text = "deals 3 physical damage and 15 emotional damage"
-text = "deals 3 physical damage and 15 emotional damage"
+bbcode_text = "deals 1 [color=#c30000]damage[/color] and 15 emotional damage"
+text = "deals 1 damage and 15 emotional damage"
 
 [node name="Label" parent="Cost" index="1"]
 text = "1"
-
-[node name="CardButton" parent="." index="8"]
-visible = false

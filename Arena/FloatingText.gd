@@ -6,7 +6,7 @@ extends Position2D
 var text setget set_text
 
 var velocity := Vector2(50, -100)
-var gravity = Vector2(0, 1)
+var gravity = Vector2(0, 2)
 var mass = 200
 
 
@@ -25,8 +25,8 @@ func _process(delta):
 	position += velocity * delta
 
 
-func set_text(text: String) -> void:
-	$Label.text = text
+func set_text(float_text: String) -> void:
+	$Label.text = float_text
 
 
 func _on_Tween_tween_all_completed() -> void:
