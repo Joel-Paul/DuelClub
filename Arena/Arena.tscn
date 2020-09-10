@@ -20,6 +20,7 @@ current = true
 [node name="ScreenShake" parent="Camera2D" instance=ExtResource( 4 )]
 
 [node name="DuelerPlayer" parent="." instance=ExtResource( 1 )]
+z_index = -1
 dueler_name = "Player"
 is_player = true
 
@@ -27,6 +28,7 @@ is_player = true
 script = ExtResource( 7 )
 
 [node name="DuelerEnemy" parent="." instance=ExtResource( 1 )]
+z_index = -1
 dueler_name = "Enemy"
 sprite_texture = ExtResource( 3 )
 

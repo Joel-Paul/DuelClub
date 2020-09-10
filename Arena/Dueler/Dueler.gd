@@ -29,7 +29,7 @@ var queue_return = []
 var queue_delete = []
 var opponent: Dueler
 var screen_rect: Vector2
-var current_turn := false
+var is_playable := false
 
 onready var health: int = max_health
 
@@ -185,19 +185,19 @@ func emit_floating_text(text: String, color: Color) -> void:
 
 
 func play_turn() -> void:
-	current_turn = true
+	is_playable = true
 	yield($Logic.play_turn(), "completed")
 
 
 func emit_ended_turn() -> void:
-	current_turn = false
+	is_playable = false
 	emit_signal("turn_ended")
 
 
 # Determines if a card is being played when a card is released.
 # If a card is being played, apply all its effects, otherwise do nothing.
 func _on_Hand_card_released(card: Card) -> void:
-	if (in_bounds() and current_turn):
+	if (in_bounds() and is_playable):
 		activate_card(card)
 	$Hand.update_hand()
 
@@ -245,7 +245,7 @@ func _on_Hand_card_moved(card: Card, pos: Vector2) -> void:
 	card.global_position = pos
 	$Hand.scale_card(card, Global.SCALE_DEFAULT)
 	
-	if in_bounds():
+	if (in_bounds() and is_playable):
 		card.glow_playable()
 	else:
 		card.glow_selection()
