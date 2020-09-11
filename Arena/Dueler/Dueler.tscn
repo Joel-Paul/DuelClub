@@ -79,11 +79,6 @@ __meta__ = {
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 960, 1026 )
-max_dist = 0.75
-dist_curve = -0.05
-pos_curve = 0.25
-max_angle = 180.0
-angle_curve = 0.5
 
 [node name="Deck" parent="." instance=ExtResource( 2 )]
 position = Vector2( 128, 920 )

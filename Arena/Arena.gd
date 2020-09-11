@@ -23,8 +23,8 @@ func start_combat() -> void:
 	update_gui()
 	
 	# Start off with 3 cards in each hand.
-	player.draw_to_hand(3)
-	enemy.draw_to_hand(3)
+	player.draw_to_hand(10)
+	enemy.draw_to_hand(10)
 	
 	play_turn()
 
@@ -49,10 +49,10 @@ func update_gui() -> void:
 	var text := ""
 	if current_dueler.is_player:
 		text = "Your Turn"
-		$GUI.disable_button(false)
 	else:
 		text = "Enemy's Turn"
-		$GUI.disable_button(true)
 	
+	print(text)
 	$GUI.play_turn_label(text)
 	yield($GUI/Tween, "tween_all_completed")
+	$GUI.disable_button(!current_dueler.is_player)

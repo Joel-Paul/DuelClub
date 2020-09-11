@@ -6,8 +6,9 @@ extends Node2D
 # and AI, and the logic of the turn-based combat.
 
 
+signal card_played(card)
 signal turn_ended
-signal damaged(amount)
+signal shake(amount)
 
 # A float between 0-1 describing how far up the screen a card can be "played",
 # i.e. a value of 0.5 means if the player lets go of the card in
@@ -25,20 +26,21 @@ var CardFlipendo := load("res://Cards/CardFlipendo/CardFlipendo.tscn")
 var CardRictusempra := load("res://Cards/CardRictusempra/CardRictusempra.tscn")
 
 var cards = [CardExpelliarmus, CardFlipendo, CardRictusempra]
-var queue_return = []
-var queue_delete = []
 var opponent: Dueler
 var screen_rect: Vector2
 var is_playable := false
+
+var queue_playing := []
+var queue_delete = []
 
 onready var health: int = max_health
 
 
 func _ready() -> void:
-	randomize()
 	$Sprite.texture = sprite_texture
 	
 	if not Engine.editor_hint:
+		randomize()
 		screen_rect = get_viewport_rect().size
 		update_health()
 		# Add 10 random cards to the deck.
@@ -66,12 +68,17 @@ func _process(_delta) -> void:
 func activate_card(card: Card) -> void:
 	for ability in card.abilities:
 		match ability.type:
-			Global.Ability.RETURN:
-				return_to_deck(card)
+			Global.Ability.PLAYABLE:
+				play_card(card)
+			Global.Ability.UNPLAYABLE:
+				pass
+			Global.Ability.DISCARD:
+				discard_card(card)
 			Global.Ability.DAMAGE:
-				damage(ability.value)
+				attack(ability.value)
 			_:
-				print("Invalid Ability!")
+				var type: String = Global.Ability.keys()[ability.type]
+				print("Invalid Ability ", type)
 	$Hand.update_hand()
 
 
@@ -88,23 +95,23 @@ func draw_to_hand(num: int = 1) -> void:
 			yield(get_tree().create_timer(0.15), "timeout")
 
 
-# Tweens the card to the middle of the screen and starts
-# a timer, which will call _on_ReturnTimer_timeout when timed out.
-func return_to_deck(card: Card) -> void:
-	# Prevent the card from being selected again.
+# Tweens the card to the middle of the
+# screen to indicate that it has been played.
+func play_card(card: Card) -> void:
+	# Remove prior cards.
+	if (!queue_playing.empty()):
+		for remaining_card in queue_playing:
+			emit_signal("card_played", remaining_card)
+	
+	queue_playing.append(card)
 	card.disable()
 	
-	# Disconnect card from Hand node and add it to the Arena node.
+	# Disconnect card from Hand node and add it to the Cards node.
 	card.position = card.global_position
 	card.get_parent().remove_child(card)
 	$Cards.add_child(card)
 	
-	# If a previous card is still waiting, skip its wait time.
-	if ($ReturnTimer.time_left != 0):
-		_on_ReturnTimer_timeout()
-	
-	# Move card to middle of screen so the player
-	# has visual indication that it has been played.
+	# Move card to middle of screen.
 	$Tween.interpolate_property(card, "scale", card.scale,
 			Global.SCALE_FOCUS, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 	$Tween.interpolate_property(card, "rotation", card.rotation,
@@ -115,18 +122,47 @@ func return_to_deck(card: Card) -> void:
 			0, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 	$Tween.start()
 	
-	# Queue for it to move to the deck.
-	queue_return.append(card)
-	var wait_time = 2
-	if is_player:
-		wait_time = 1
-	$ReturnTimer.start(wait_time)
+	yield(get_tree().create_timer(1), "timeout")
+	emit_signal("card_played", card)
+
+
+# Sends the card to the discard pile after a card has been played.
+func discard_card(card: Card) -> void:
+	var played_card: Card = yield(self, "card_played")
+	while (card != played_card):
+		played_card = yield(self, "card_played")
+	queue_playing.erase(card)
+	force_discard(played_card)
+
+
+# Sends the card to the discard pile regardless of state.
+func force_discard(card: Card) -> void:
+	card.show_back()
+	# Set cards behind the deck.
+	card.z_index = $Deck.z_index - 1
+	# Move card to the deck.
+	$Tween.interpolate_property(card, "scale", card.scale,
+			Global.SCALE_START * 0.25, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+	$Tween.interpolate_property(card, "rotation", card.rotation,
+			-2*PI, 1, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
+	$Tween.interpolate_property(card, "position:x", card.position.x,
+			$Deck.position.x, 1, Tween.TRANS_QUART, Tween.EASE_IN_OUT)
+	$Tween.interpolate_property(card, "position:y", card.position.y,
+			$Deck.position.y, 1, Tween.TRANS_QUART, Tween.EASE_IN)
+	$Tween.interpolate_property(card, "back_alpha", 0.0,
+			1.0, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
+	$Tween.start()
+	
+	# Add a copy of the card to the bottom of the deck.
+	var card_copy: Card = card.duplicate()
+	card_copy.reset_timer()
+	$Deck.add_card_under(card_copy)
+	
+	queue_delete.append(card)
 
 
 # Deals damage to the opponent.
-func damage(amount: int) -> void:
-	if !is_player:
-		yield(get_tree().create_timer(0.66), "timeout")
+func attack(amount: int) -> void:
 	# Attack animation.
 	animate_displace(50)
 	# Delay the hurt animation by a fraction of a second.
@@ -137,8 +173,7 @@ func damage(amount: int) -> void:
 	opponent.update_health()
 	
 	opponent.emit_floating_text("-" + String(amount), Color.firebrick)
-	
-	emit_signal("damaged", amount * 2)
+	emit_signal("shake", amount * 2)
 
 
 # Updates the health bar.
@@ -175,6 +210,8 @@ func in_bounds() -> bool:
 	return get_global_mouse_position().y < screen_rect.y * vert_play_limit
 
 
+# Creates floating text that pops out of the dueler.
+# Used when dueler is damaged to indicate damage taken.
 func emit_floating_text(text: String, color: Color) -> void:
 	var floating_text = FloatingText.instance()
 	floating_text.text = text
@@ -184,11 +221,15 @@ func emit_floating_text(text: String, color: Color) -> void:
 	add_child(floating_text)
 
 
+# Play out turn according to the Logic script.
+# Having a separate script allows for adaptability
+# for player, AI and other input logic.
 func play_turn() -> void:
 	is_playable = true
 	yield($Logic.play_turn(), "completed")
 
 
+# Signals that the dueler's turn has been ended.
 func emit_ended_turn() -> void:
 	is_playable = false
 	emit_signal("turn_ended")
@@ -200,36 +241,6 @@ func _on_Hand_card_released(card: Card) -> void:
 	if (in_bounds() and is_playable):
 		activate_card(card)
 	$Hand.update_hand()
-
-
-# Moves a queued card back to the deck.
-func _on_ReturnTimer_timeout() -> void:
-	# Get next card to move
-	var card: Card = queue_return.pop_front()
-	card.show_back()
-	
-	# Set cards behind the deck.
-	card.z_index = $Deck.z_index - 1
-	# Move card to the deck.
-	$Tween.interpolate_property(card, "scale", card.scale,
-			Global.SCALE_START * 0.25, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
-	$Tween.interpolate_property(card, "rotation", card.rotation,
-			-2*PI, 1, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
-	$Tween.interpolate_property(card, "position:x", card.position.x,
-			$Deck.position.x, 1, Tween.TRANS_QUART, Tween.EASE_IN_OUT)
-	$Tween.interpolate_property(card, "position:y", card.position.y,
-			$Deck.position.y, 1, Tween.TRANS_QUART, Tween.EASE_IN)
-	$Tween.interpolate_property(card, "back_alpha", 0.0,
-			1.0, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
-	$Tween.start()
-	
-	# Add a copy of the card to the bottom of the deck.
-	var card_copy: Card = card.duplicate()
-	card_copy.reset_timer()
-	$Deck.add_card_under(card_copy)
-	
-	# Queue for deletion
-	queue_delete.append(card)
 
 
 # Called when all tweens are finished, and deletes any cards in queue.

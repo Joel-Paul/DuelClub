@@ -9,7 +9,10 @@ enum Stance {
 }
 
 enum Ability {
-	RETURN,
+	NONE,
+	PLAYABLE,
+	UNPLAYABLE,
+	DISCARD,
 	DAMAGE,
 }
 
