@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://Fonts/Roboto/Roboto-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Arena/Deck/Deck.tscn" type="PackedScene" id=2]
@@ -12,6 +12,7 @@
 [ext_resource path="res://Character/Energy/over.png" type="Texture" id=10]
 [ext_resource path="res://Character/Energy/progress.png" type="Texture" id=11]
 [ext_resource path="res://Character/Energy/under.png" type="Texture" id=12]
+[ext_resource path="res://Arena/Deck/discard_pile.png" type="Texture" id=13]
 
 [sub_resource type="DynamicFont" id=1]
 size = 42
@@ -132,9 +133,14 @@ text = "2/3"
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 960, 1026 )
 
-[node name="Deck" parent="." instance=ExtResource( 2 )]
-position = Vector2( 128, 920 )
-scale = Vector2( 0.5, 0.5 )
+[node name="DrawPile" parent="." instance=ExtResource( 2 )]
+position = Vector2( 100, 980 )
+scale = Vector2( 0.33, 0.33 )
+
+[node name="DiscardPile" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1820, 980 )
+scale = Vector2( 0.33, 0.33 )
+texture = ExtResource( 13 )
 
 [node name="Logic" type="Node2D" parent="."]
 script = ExtResource( 9 )

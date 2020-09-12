@@ -51,7 +51,7 @@ func _ready() -> void:
 		for _i in range(10):
 			cards.shuffle()
 			var rand_card = cards.front()
-			$Deck.add_card_ontop(rand_card.instance())
+			$DrawPile.add_card_ontop(rand_card.instance())
 
 
 func _draw() -> void:
@@ -89,9 +89,9 @@ func activate_card(card: Card) -> void:
 # Draws cards from the deck to the hand.
 func draw_to_hand(num: int = 1) -> void:
 	for _i in range(num):
-		var card: Card = $Deck.draw_card()
+		var card: Card = $DrawPile.draw_card()
 		if (card != null):
-			$Hand.add_card(card, $Deck.global_position)
+			$Hand.add_card(card, $DrawPile.global_position)
 			if is_player:
 				card.show_front()
 			else:
@@ -146,16 +146,16 @@ func discard_card(card: Card) -> void:
 func force_discard(card: Card) -> void:
 	card.show_back()
 	# Set cards behind the deck.
-	card.z_index = $Deck.z_index - 1
+	card.z_index = $DiscardPile.z_index - 1
 	# Move card to the deck.
 	$Tween.interpolate_property(card, "scale", card.scale,
 			Global.SCALE_START * 0.25, 1, Tween.TRANS_CUBIC, Tween.EASE_OUT)
 	$Tween.interpolate_property(card, "rotation", card.rotation,
 			-2*PI, 1, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
 	$Tween.interpolate_property(card, "position:x", card.position.x,
-			$Deck.position.x, 1, Tween.TRANS_QUART, Tween.EASE_IN_OUT)
+			$DiscardPile.position.x, 1, Tween.TRANS_QUART, Tween.EASE_IN_OUT)
 	$Tween.interpolate_property(card, "position:y", card.position.y,
-			$Deck.position.y, 1, Tween.TRANS_QUART, Tween.EASE_IN)
+			$DiscardPile.position.y, 1, Tween.TRANS_QUART, Tween.EASE_IN)
 	$Tween.interpolate_property(card, "back_alpha", 0.0,
 			1.0, 1, Tween.TRANS_QUART, Tween.EASE_OUT)
 	$Tween.start()
@@ -163,7 +163,7 @@ func force_discard(card: Card) -> void:
 	# Add a copy of the card to the bottom of the deck.
 	var card_copy: Card = card.duplicate()
 	card_copy.reset_timer()
-	$Deck.add_card_under(card_copy)
+	$DiscardPile.add_card_under(card_copy)
 	
 	queue_delete.append(card)
 

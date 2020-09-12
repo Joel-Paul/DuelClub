@@ -13,7 +13,7 @@ func _ready() -> void:
 	player.opponent = enemy
 	enemy.opponent = player
 	
-	yield(get_tree().create_timer(1), "timeout")
+	yield(get_tree().create_timer(10), "timeout")
 	start_combat()
 
 
@@ -56,6 +56,7 @@ func update_gui() -> void:
 		text = "Enemy's Turn"
 	
 	print(text)
+	current_dueler.update_energy()
 	$GUI.play_turn_label(text)
 	yield($GUI/Tween, "tween_all_completed")
 	$GUI.disable_button(!current_dueler.is_player)

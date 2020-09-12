@@ -4,9 +4,9 @@
 [ext_resource path="res://Arena/Arena.gd" type="Script" id=2]
 [ext_resource path="res://Character/character_enemy.png" type="Texture" id=3]
 [ext_resource path="res://ScreenShake/ScreenShake.tscn" type="PackedScene" id=4]
-[ext_resource path="res://Arena/LogicRand.gd" type="Script" id=5]
+[ext_resource path="res://Arena/Dueler/Logic/LogicPlayer.gd" type="Script" id=5]
 [ext_resource path="res://Arena/GUI/GUI.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Arena/LogicPlayer.gd" type="Script" id=7]
+[ext_resource path="res://Arena/Dueler/Logic/LogicRand.gd" type="Script" id=7]
 
 [node name="Arena" type="Node"]
 script = ExtResource( 2 )
@@ -22,8 +22,8 @@ z_index = -10
 dueler_name = "Player"
 is_player = true
 
-[node name="Logic" parent="DuelerPlayer" index="4"]
-script = ExtResource( 7 )
+[node name="Logic" parent="DuelerPlayer" index="5"]
+script = ExtResource( 5 )
 
 [node name="DuelerEnemy" parent="." instance=ExtResource( 1 )]
 z_index = -10
@@ -44,12 +44,14 @@ margin_bottom = -148.0
 position = Vector2( 960, 54 )
 scale = Vector2( 1, -1 )
 
-[node name="Deck" parent="DuelerEnemy" index="3"]
-position = Vector2( 1792, 160 )
-scale = Vector2( 0.5, -0.5 )
+[node name="DrawPile" parent="DuelerEnemy" index="3"]
+position = Vector2( 1820, 100 )
 
-[node name="Logic" parent="DuelerEnemy" index="4"]
-script = ExtResource( 5 )
+[node name="DiscardPile" parent="DuelerEnemy" index="4"]
+position = Vector2( 100, 100 )
+
+[node name="Logic" parent="DuelerEnemy" index="5"]
+script = ExtResource( 7 )
 
 [node name="GUI" parent="." instance=ExtResource( 6 )]
 mouse_filter = 2
