@@ -15,9 +15,12 @@ signal shake(amount)
 # the top 50% of the window, the card will be considered played.
 export(String) var dueler_name = "Harry"
 export(int) var max_health := 10
+export(int) var max_energy := 3
 export(Texture) var sprite_texture := load("res://Character/character_blank.png")
 export(bool) var is_player
 export(float, 1) var vert_play_limit := 0.66
+
+var screen_rect: Vector2
 
 var FloatingText := preload("res://Arena/FloatingText.tscn")
 
@@ -27,13 +30,13 @@ var CardRictusempra := load("res://Cards/CardRictusempra/CardRictusempra.tscn")
 
 var cards = [CardExpelliarmus, CardFlipendo, CardRictusempra]
 var opponent: Dueler
-var screen_rect: Vector2
-var is_playable := false
+var is_turn := false
 
 var queue_playing := []
-var queue_delete = []
+var queue_delete := []
 
 onready var health: int = max_health
+onready var energy: int = max_energy
 
 
 func _ready() -> void:
@@ -43,6 +46,7 @@ func _ready() -> void:
 		randomize()
 		screen_rect = get_viewport_rect().size
 		update_health()
+		update_energy()
 		# Add 10 random cards to the deck.
 		for _i in range(10):
 			cards.shuffle()
@@ -105,6 +109,9 @@ func play_card(card: Card) -> void:
 	
 	queue_playing.append(card)
 	card.disable()
+	card.get_node("Cost").visible = false
+	energy -= card.cost
+	update_energy()
 	
 	# Disconnect card from Hand node and add it to the Cards node.
 	card.position = card.global_position
@@ -178,18 +185,48 @@ func attack(amount: int) -> void:
 
 # Updates the health bar.
 func update_health() -> void:
-	var health_bar = $Sprite/HealthBar
+	var health_bar = $Sprite/Health/HealthBar
 	health_bar.max_value = max_health
 	health_bar.value = health
-	$Sprite/HealthBar/HealthLabel.text = "%d/%d" % [health, max_health]
+	$Sprite/Health/HealthLabel.text = "%d/%d" % [health, max_health]
 	
 	yield(get_tree().create_timer(0.5), "timeout")
-	var tween_bar = $Sprite/TweenBar
+	var tween_bar = $Sprite/Health/TweenBar
 	tween_bar.step = 0.01
 	tween_bar.max_value = max_health
 	$Tween.interpolate_property(tween_bar, "value", tween_bar.value,
 			health_bar.value, 0.5, Tween.TRANS_LINEAR, Tween.EASE_IN)
 	$Tween.start()
+
+
+# Updates the energy bar.
+func update_energy() -> void:
+	var energy_bar = $Sprite/Energy/EnergyBar
+	energy_bar.max_value = max_energy
+	energy_bar.value = energy
+	$Sprite/Energy/EnergyLabel.text = "%d/%d" % [energy, max_energy]
+	
+	yield(get_tree().create_timer(0.5), "timeout")
+	var tween_bar = $Sprite/Energy/TweenBar
+	tween_bar.step = 0.01
+	tween_bar.max_value = max_energy
+	$Tween.interpolate_property(tween_bar, "value", tween_bar.value,
+			energy_bar.value, 0.5, Tween.TRANS_LINEAR, Tween.EASE_IN)
+	$Tween.start()
+
+# Returns a boolen if the card can be played.
+# Checks if the dueler has enough energy and if it's currently its turn.
+# Does not check mouse postiion, which is done by the `in_bounds()` function.
+func can_play(card: Card) -> bool:
+	if (energy >= card.cost):
+		return is_turn
+	else:
+		return false
+
+
+# Checks if the mouse is within the play bounds.
+func in_bounds() -> bool:
+	return get_global_mouse_position().y < screen_rect.y * vert_play_limit
 
 
 # Displaces the sprite node by `displace`,
@@ -203,11 +240,6 @@ func animate_displace(displace: int) -> void:
 	$Tween.interpolate_property($Sprite, "position", $Sprite.position,
 			sprite_pos, 0.5, Tween.TRANS_QUAD, Tween.EASE_OUT)
 	$Tween.start()
-
-
-# Checks if the mouse is within the play bounds.
-func in_bounds() -> bool:
-	return get_global_mouse_position().y < screen_rect.y * vert_play_limit
 
 
 # Creates floating text that pops out of the dueler.
@@ -225,20 +257,23 @@ func emit_floating_text(text: String, color: Color) -> void:
 # Having a separate script allows for adaptability
 # for player, AI and other input logic.
 func play_turn() -> void:
-	is_playable = true
+	is_turn = true
+	energy = max_energy
+	update_energy()
+	draw_to_hand()
 	yield($Logic.play_turn(), "completed")
 
 
 # Signals that the dueler's turn has been ended.
 func emit_ended_turn() -> void:
-	is_playable = false
+	is_turn = false
 	emit_signal("turn_ended")
 
 
 # Determines if a card is being played when a card is released.
 # If a card is being played, apply all its effects, otherwise do nothing.
 func _on_Hand_card_released(card: Card) -> void:
-	if (in_bounds() and is_playable):
+	if (in_bounds() and can_play(card)):
 		activate_card(card)
 	$Hand.update_hand()
 
@@ -256,7 +291,7 @@ func _on_Hand_card_moved(card: Card, pos: Vector2) -> void:
 	card.global_position = pos
 	$Hand.scale_card(card, Global.SCALE_DEFAULT)
 	
-	if (in_bounds() and is_playable):
+	if (in_bounds() and can_play(card)):
 		card.glow_playable()
 	else:
 		card.glow_selection()

@@ -20,12 +20,15 @@ func _ready() -> void:
 # Initiate the combat.
 func start_combat() -> void:
 	current_dueler = player
-	update_gui()
 	
 	# Start off with 3 cards in each hand.
-	player.draw_to_hand(10)
-	enemy.draw_to_hand(10)
+	player.draw_to_hand(3)
+	enemy.draw_to_hand(3)
 	
+	$GUI.play_turn_label("Begin Combat")
+	yield($GUI/Tween, "tween_all_completed")
+	
+	update_gui()
 	play_turn()
 
 
