@@ -1,4 +1,4 @@
-# DuelClub
+# DuelClub [NO LONGER BEING DEVELOPED]
 DuelClub is an in-development proof-of-concept that aims to demonstrate how the duelling sytem in [Harry Potter: Hogwarts Mystery](http://www.harrypotterhogwartsmystery.com/) could be improved.
 
 HP: HM utilises a simple rock/paper/scissors minigame to emulate duelling, however this is repetitious and boring.
